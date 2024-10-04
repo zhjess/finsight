@@ -1,0 +1,67 @@
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+model User {
+  id            String        @id @default(cuid()) 
+  email         String        @unique
+  password      String        // store hashed password
+  transactions  Transaction[]
+  kpis          Kpi[]
+}
+
+model Transaction {
+  id            String         @id @default(cuid())
+  amount        Int            // cents instead of fractional dollar
+  products      Product[]
+  userId        String
+  users         User           @relation(fields: [userId], references: [id])
+}
+
+model Product {
+  id            String        @id @default(cuid()) 
+  price         Int
+  expense       Int
+  transactionId String
+  transaction   Transaction   @relation(fields: [transactionId], references: [id])
+}
+
+model Day {
+  id            String        @id @default(cuid()) 
+  date          DateTime      
+  revenue       Int           // cents instead of fractional dollar
+  expenses      Int           // cents instead of fractional dollar
+  kpiId         String
+  kpi           Kpi           @relation(fields: [kpiId], references: [id])
+}
+
+model Month {
+  id                      String     @id @default(cuid()) 
+  date                    DateTime   
+  revenue                 Int        // cents instead of fractional dollar
+  expenses                Int        // cents instead of fractional dollar
+  operationalExpenses     Int        // cents instead of fractional dollar
+  nonOperationalExpenses  Int        // cents instead of fractional dollar
+  kpiId                   String
+  kpi                     Kpi        @relation(fields: [kpiId], references: [id])
+}
+
+model Kpi {
+  id                    String   @id @default(cuid())       
+  totalProfit           Int      // Store in cents
+  totalRevenue          Int      // Store in cents
+  totalExpenses         Int      // Store in cents
+  expensesByCategory    Json     // JSON to store expenses by category
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id])
+  monthlyData           Month[]  
+  dailyData             Day[]    
+}
