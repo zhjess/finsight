@@ -11,40 +11,63 @@ datasource db {
 }
 
 model User {
-  id            String        @id @default(cuid()) 
-  email         String        @unique
-  password      String        // store hashed password
+  id            String          @id @default(cuid()) 
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  email         String          @unique
+  password      String          // store hashed password
   transactions  Transaction[]
   kpis          Kpi[]
 }
 
 model Transaction {
-  id            String         @id @default(cuid())
-  amount        Int            // cents instead of fractional dollar
-  products      Product[]
-  userId        String
-  users         User           @relation(fields: [userId], references: [id])
+  id                  String          @id @default(cuid())
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  transactionProducts TransactionProduct[]
+  customer            String
+  userId              String
+  users               User            @relation(fields: [userId], references: [id])
 }
 
 model Product {
-  id            String        @id @default(cuid()) 
+  id            String          @id @default(cuid())
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  description   String
   price         Int
   expense       Int
+  transactionProducts TransactionProduct[]
+}
+
+model TransactionProduct {
+  id            String          @id @default(cuid())
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
   transactionId String
-  transaction   Transaction   @relation(fields: [transactionId], references: [id])
+  transaction   Transaction     @relation(fields: [transactionId], references: [id])
+  productId     String
+  product       Product         @relation(fields: [productId], references: [id])
+  quantity      Int
+
+  @@unique([transactionId, productId])
 }
 
 model Day {
-  id            String        @id @default(cuid()) 
+  id            String          @id @default(cuid()) 
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
   date          DateTime      
-  revenue       Int           // cents instead of fractional dollar
-  expenses      Int           // cents instead of fractional dollar
+  revenue       Int             // cents instead of fractional dollar
+  expenses      Int             // cents instead of fractional dollar
   kpiId         String
-  kpi           Kpi           @relation(fields: [kpiId], references: [id])
+  kpi           Kpi             @relation(fields: [kpiId], references: [id])
 }
 
 model Month {
   id                      String     @id @default(cuid()) 
+  createdAt               DateTime   @default(now())
+  updatedAt               DateTime   @updatedAt
   date                    DateTime   
   revenue                 Int        // cents instead of fractional dollar
   expenses                Int        // cents instead of fractional dollar
@@ -55,13 +78,15 @@ model Month {
 }
 
 model Kpi {
-  id                    String   @id @default(cuid())       
-  totalProfit           Int      // Store in cents
-  totalRevenue          Int      // Store in cents
-  totalExpenses         Int      // Store in cents
-  expensesByCategory    Json     // JSON to store expenses by category
+  id                    String    @id @default(cuid())       
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  totalProfit           Int       // Store in cents
+  totalRevenue          Int       // Store in cents
+  totalExpenses         Int       // Store in cents
+  expensesByCategory    Json      // JSON to store expenses by category
   userId                String
-  user                  User     @relation(fields: [userId], references: [id])
+  user                  User      @relation(fields: [userId], references: [id])
   monthlyData           Month[]  
   dailyData             Day[]    
 }

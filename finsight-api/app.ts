@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 import helmet from "helmet";
 import morgan from "morgan";
 import kpiRoutes from "./routes/kpi";
+import productRoutes from "./routes/product";
+import transactionRoutes from "./routes/transaction";
 
 // Configuration
 dotenv.config();
@@ -22,5 +24,7 @@ app.use(cors());
 // Routes
 app.get('/', (req, res) => {res.status(200).json({info: "Finsight API"})});
 app.use("/kpi", kpiRoutes);
+app.use("/product", productRoutes);
+app.use("/transaction", transactionRoutes);
 
 export default app;

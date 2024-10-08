@@ -140,6 +140,7 @@ const Row1 = () => {
                         />
                         <YAxis
                             yAxisId="left"
+                            orientation="left"
                             tickLine={false}
                             axisLine={false}
                             style={{ fontSize: "9px" }}
@@ -191,8 +192,8 @@ const Row1 = () => {
                                 <stop offset="95%" stopColor={palette.primary[300]} stopOpacity={0} />
                             </linearGradient>
                             <linearGradient id="colorRevenueSelected" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor={palette.primary[600]} stopOpacity={0.8} />
-                                <stop offset="95%" stopColor={palette.primary[600]} stopOpacity={0} />
+                                <stop offset="5%" stopColor={palette.primary[700]} stopOpacity={0.8} />
+                                <stop offset="95%" stopColor={palette.primary[700]} stopOpacity={0} />
                             </linearGradient>
                         </defs>
                         <CartesianGrid vertical={false} stroke={palette.grey[800]} />
@@ -211,13 +212,13 @@ const Row1 = () => {
                         <Bar
                             dataKey="revenue"
                             fill="url(#colorRevenue)"
-                            activeBar={<Rectangle fill="url(#colorRevenueSelected)" stroke="black" />}
+                            activeBar={<Rectangle fill="url(#colorRevenueSelected)" stroke={palette.grey[800]} />}
                         />
                     </BarChart>
                 </ResponsiveContainer>
             </DashboardBox>
         </>
-    )
+    );
 }
 
 export default Row1;
