@@ -46,12 +46,21 @@ export interface User {
     kpis: Array<string>;
 }
 
+export interface TransactionProduct {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    transactionId: string;
+    productId: string;
+    quantity: number;
+}
+
 export interface Transaction {
     id: string;
     createdAt: string;
     updatedAt: string;
     amount: number;
-    transactionProducts: Array<string>;
+    transactionProducts: Array<TransactionProduct>;
     customer: string;
     userId: string;
     user: User;
@@ -64,5 +73,14 @@ export interface GetProductsResponse {
     description: string;
     price: number;
     expense: number;
-    transactions: Array<string>;
+    transactions: Array<Transaction>;
+}
+
+export interface GetTransactionsResponse {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    transactionProducts: Array<TransactionProduct>;
+    customer: string;
+    userId: string;
 }

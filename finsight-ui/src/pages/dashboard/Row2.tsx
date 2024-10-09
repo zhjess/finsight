@@ -1,10 +1,10 @@
-import BoxHeader from '@/components/BoxHeader';
-import DashboardBox from '@/components/DashboardBox';
-import FlexBetween from '@/components/FlexBetween';
-import { useGetKpisQuery, useGetProductsQuery } from '@/state/api';
-import { Box, Typography, useTheme } from '@mui/material';
-import React, { useMemo } from 'react';
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis, Tooltip, PieChart, Pie, Cell, ScatterChart, Scatter, ZAxis } from 'recharts';
+import BoxHeader from "@/components/BoxHeader";
+import DashboardBox from "@/components/DashboardBox";
+import FlexBetween from "@/components/FlexBetween";
+import { useGetKpisQuery, useGetProductsQuery } from "@/state/api";
+import { Box, Typography, useTheme } from "@mui/material";
+import React, { useMemo } from "react";
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis, Tooltip, PieChart, Pie, Cell, ScatterChart, Scatter, ZAxis } from "recharts";
 
 const pieData = [
     { name: "Group A", value: 600 },
@@ -23,7 +23,7 @@ const Row2 = () => {
             kpiData &&
             kpiData[0].monthlyData.map(({ date, operationalExpenses, nonOperationalExpenses}) => {
                 const d = new Date(date);
-                const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(d);
+                const monthName = new Intl.DateTimeFormat("en-US", { month: "long" }).format(d);
                 return {
                     date: monthName.substring(0, 3),
                     operationalExpenses: (operationalExpenses / 100000).toFixed(2), // Denomination: $'000
@@ -177,7 +177,7 @@ const Row2 = () => {
                             tickFormatter={(v) => `$${v}`}
                         />
                         <ZAxis type="number" range={[20]} />
-                        <Tooltip cursor={{ strokeDasharray: '3 3' }} formatter={(v) => `${v}`} />
+                        <Tooltip cursor={{ strokeDasharray: "3 3" }} formatter={(v) => `${v}`} />
                         <Scatter name="Product Expense Ratio" data={productPricesExpenses} fill={palette.tertiary[500]} />
                     </ScatterChart>
                 </ResponsiveContainer>

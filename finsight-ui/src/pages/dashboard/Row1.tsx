@@ -14,7 +14,7 @@ const Row1 = () => {
             data &&
             data[0].monthlyData.map(({ date, revenue, expenses}) => {
                 const d = new Date(date);
-                const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(d);
+                const monthName = new Intl.DateTimeFormat("en-US", { month: "long" }).format(d);
                 return {
                     date: monthName.substring(0, 3),
                     revenue: (revenue / 100000).toFixed(2), // Denomination: $'000
@@ -29,7 +29,7 @@ const Row1 = () => {
             data &&
             data[0].monthlyData.map(({ date, revenue, expenses}) => {
                 const d = new Date(date);
-                const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(d);
+                const monthName = new Intl.DateTimeFormat("en-US", { month: "long" }).format(d);
                 return {
                     date: monthName.substring(0, 3),
                     revenue: (revenue / 100000).toFixed(2), // Denomination: $'000
@@ -44,7 +44,7 @@ const Row1 = () => {
             data &&
             data[0].monthlyData.map(({ date, revenue }) => {
                 const d = new Date(date);
-                const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(d);
+                const monthName = new Intl.DateTimeFormat("en-US", { month: "long" }).format(d);
                 return {
                     date: monthName.substring(0, 3),
                     revenue: (revenue / 100000).toFixed(2), // Denomination: $'000
@@ -75,12 +75,12 @@ const Row1 = () => {
                     >
                         <defs>
                             <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor={palette.primary[300]} stopOpacity={0.7} />
-                                <stop offset="95%" stopColor={palette.primary[300]} stopOpacity={0} />
+                                <stop offset="5%" stopColor={palette.primary[400]} stopOpacity={0.7} />
+                                <stop offset="95%" stopColor={palette.primary[400]} stopOpacity={0} />
                             </linearGradient>
                             <linearGradient id="colorExpenses" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor={palette.primary[300]} stopOpacity={0.8} />
-                                <stop offset="95%" stopColor={palette.primary[300]} stopOpacity={0} />
+                                <stop offset="5%" stopColor={palette.primary[400]} stopOpacity={0.8} />
+                                <stop offset="95%" stopColor={palette.primary[400]} stopOpacity={0} />
                             </linearGradient>
                         </defs>
                         <CartesianGrid vertical={false} stroke={palette.grey[800]} />
