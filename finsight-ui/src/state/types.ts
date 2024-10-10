@@ -1,6 +1,7 @@
 export interface ExpensesByCategory {
-    category1: number;
-    category2: number;
+    supplies: number;
+    salaries: number;
+    services: number;
 }
 
 export interface Day {
@@ -83,4 +84,5 @@ export interface GetTransactionsResponse {
     transactionProducts: Array<TransactionProduct>;
     customer: string;
     userId: string;
+    transactionTotal: number;
 }

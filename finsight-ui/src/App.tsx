@@ -5,6 +5,7 @@ import { themeSettings } from "./theme";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import NavBar from "@/components/NavBar";
 import Dashboard from "@/pages/dashboard";
+import Predictions from "@/pages/predictions";
 
 function App() {
 
@@ -19,7 +20,7 @@ function App() {
 						<NavBar />
 						<Routes>
 							<Route path="/" element={<Dashboard />}/>
-							<Route path="/predictions" element={<div>hi</div>}/>
+							<Route path="/predictions" element={<Predictions />}/>
 						</Routes>
 					</Box>
 				</ThemeProvider>
