@@ -199,7 +199,7 @@ async function main() {
             if (day > 30 && [3, 5, 8, 10].includes(month)) break;
 
             const dailyRevenue = 25000 + Math.floor(Math.random() * 20000);
-            const dailyExpenses = Math.min(dailyRevenue, 20000 + Math.floor(Math.random() * 10000)); // keep below daily revenue
+            const dailyExpenses = Math.min(dailyRevenue, 20000 + Math.floor(Math.random() * 10000)); // Keep below daily revenue
 
             await prisma.day.create({
                 data: {
@@ -216,8 +216,8 @@ async function main() {
 };
 
 main()
-    .catch((e) => {
-        console.error(e);
+    .catch((err) => {
+        console.error(err);
         process.exit(1);
     })
     .finally(async () => {

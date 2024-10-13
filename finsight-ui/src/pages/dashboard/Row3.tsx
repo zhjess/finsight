@@ -73,7 +73,7 @@ const Row3 = () => {
                             borderBottom: `1px solid ${palette.grey[800]} !important`,
                         },
                         "& .MuiDataGrid-columnHeaders": {
-                            borderBottom: `1px solid ${palette.grey[900]} !important`,
+                            borderBottom: `1px solid ${palette.grey[800]} !important`,
                         },
                         "& .MuiDataGrid-columnSeparator": {
                             visibility: "hidden"
@@ -109,7 +109,7 @@ const Row3 = () => {
                             borderBottom: `1px solid ${palette.grey[800]} !important`,
                         },
                         "& .MuiDataGrid-columnHeaders": {
-                            borderBottom: `1px solid ${palette.grey[900]} !important`,
+                            borderBottom: `1px solid ${palette.grey[800]} !important`,
                             border: "none"
                         },
                         "& .MuiDataGrid-columnSeparator": {

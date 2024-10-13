@@ -11,16 +11,16 @@ export const tokens = {
     900: "#242427",
   },
   primary: {
-    // light green
-    100: "#d0fcf4",
-    200: "#a0f9e9",
-    300: "#71f5de",
-    400: "#41f2d3",
-    500: "#12efc8",
-    600: "#0ebfa0",
-    700: "#0b8f78",
-    800: "#076050",
-    900: "#043028",
+    // lighter baby blue
+    100: "#e0f1fa",
+    200: "#b3e0f4",
+    300: "#86cfe8",
+    400: "#59bede",
+    500: "#2ab1d6",
+    600: "#25a3c0",
+    700: "#2092a4",
+    800: "#1a7b8b",
+    900: "#0d5e6f",
   },
   secondary: {
     // yellow
@@ -35,8 +35,16 @@ export const tokens = {
     900: "#302411",
   },
   tertiary: {
-    // purple
-    500: "#8884d8",
+    // more pastel pale purple
+    100: "#f7e9fc",
+    200: "#f0d2f6",
+    300: "#e9b8f1",
+    400: "#e3a0eb",
+    500: "#dc88e5",
+    600: "#c87cc9",
+    700: "#b76eb1",
+    800: "#a0609b",
+    900: "#8e4a7e",
   },
   background: {
     light: "#2d2d34",
@@ -58,6 +66,7 @@ export const themeSettings = {
     },
     tertiary: {
       ...tokens.tertiary,
+      main: tokens.tertiary[500],
     },
     grey: {
       ...tokens.grey,

@@ -75,12 +75,12 @@ const Row1 = () => {
                     >
                         <defs>
                             <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor={palette.primary[400]} stopOpacity={0.7} />
-                                <stop offset="95%" stopColor={palette.primary[400]} stopOpacity={0} />
+                                <stop offset="5%" stopColor={palette.primary[600]} stopOpacity={0.7} />
+                                <stop offset="95%" stopColor={palette.primary[600]} stopOpacity={0} />
                             </linearGradient>
                             <linearGradient id="colorExpenses" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor={palette.primary[400]} stopOpacity={0.8} />
-                                <stop offset="95%" stopColor={palette.primary[400]} stopOpacity={0} />
+                                <stop offset="5%" stopColor={palette.primary[600]} stopOpacity={0.8} />
+                                <stop offset="95%" stopColor={palette.primary[600]} stopOpacity={0} />
                             </linearGradient>
                         </defs>
                         <CartesianGrid vertical={false} stroke={palette.grey[800]} />
@@ -186,16 +186,6 @@ const Row1 = () => {
                             bottom: 60,
                         }}
                     >
-                         <defs>
-                            <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor={palette.primary[300]} stopOpacity={0.7} />
-                                <stop offset="95%" stopColor={palette.primary[300]} stopOpacity={0} />
-                            </linearGradient>
-                            <linearGradient id="colorRevenueSelected" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor={palette.primary[700]} stopOpacity={0.8} />
-                                <stop offset="95%" stopColor={palette.primary[700]} stopOpacity={0} />
-                            </linearGradient>
-                        </defs>
                         <CartesianGrid vertical={false} stroke={palette.grey[800]} />
                         <XAxis
                             dataKey="date"
@@ -211,8 +201,8 @@ const Row1 = () => {
                         <Tooltip />
                         <Bar
                             dataKey="revenue"
-                            fill="url(#colorRevenue)"
-                            activeBar={<Rectangle fill="url(#colorRevenueSelected)" stroke={palette.grey[800]} />}
+                            fill="url(#colorExpenses)"
+                            activeBar={<Rectangle fill="url(#colorExpensesSelected)" stroke={palette.grey[800]} />}
                         />
                     </BarChart>
                 </ResponsiveContainer>

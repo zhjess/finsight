@@ -7,6 +7,7 @@ import morgan from "morgan";
 import kpiRoutes from "./routes/kpi";
 import productRoutes from "./routes/product";
 import transactionRoutes from "./routes/transaction";
+import loginRoutes from "./routes/login";
 
 // Configuration
 dotenv.config();
@@ -22,7 +23,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 
 // Routes
-app.get('/', (req, res) => {res.status(200).json({info: "Finsight API"})});
+app.get("/", (req, res) => {res.status(200).json({info: "Finsight API"})});
+app.use("/login", loginRoutes);
 app.use("/kpi", kpiRoutes);
 app.use("/product", productRoutes);
 app.use("/transaction", transactionRoutes);

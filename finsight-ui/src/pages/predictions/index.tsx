@@ -1,14 +1,14 @@
 import DashboardBox from "@/components/DashboardBox";
 import FlexBetween from "@/components/FlexBetween";
 import { useGetKpisQuery } from "@/state/api";
-import { Box, Button, Typography, useTheme } from "@mui/material"
-import React, { useMemo, useState } from "react"
+import { Box, Button, Typography, useTheme } from "@mui/material";
+import React, { useMemo, useState } from "react";
 import { CartesianGrid, Label, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import regression, { DataPoint } from "regression";
 
 const Predictions = () => {
     const { palette } = useTheme();
-    const [isPredictions, setIsPredictions] = useState(false);
+    const [isPredictions, setIsPredictions] = useState<boolean>(false);
     const { data: kpiData } = useGetKpisQuery();
 
     const formattedData = useMemo(() => {
@@ -36,80 +36,86 @@ const Predictions = () => {
         return [];
     }, [kpiData]);
 
+    // Calculate min and max for the Y-axis with a buffer
+    const revenues: number[] = formattedData.map(data => parseInt(data["actual revenue"]));
+    const minRevenue: number = Math.min(...revenues);
+    const maxRevenue: number = Math.max(...revenues);
+    const yMin = Math.round(minRevenue * (1 - 0.1)); // Decrease min by 10%
+    const yMax = Math.round(maxRevenue * (1 + 0.1)); // Increase max by 10%
+
     return (
         <DashboardBox width="100%" height="90vh" p="1rem">
             <FlexBetween m="1rem 2.5rem" gap="0.3rem">
                 <Box>
                     <Typography variant="h3">Revenue and Predictions</Typography>
-                    <Typography variant="h6">Charted revenue and predicted revenue based on a simple linear regression model</Typography>
+                    <Typography variant="h6" fontSize="12px">Predicted revenue for the next 12 months based on a simple linear regression model</Typography>
                 </Box>
                 <Button
                     onClick={() => setIsPredictions(!isPredictions)}
                     sx={{
                         color: palette.grey[100],
-                        backgroundColor: palette.primary[800],
+                        backgroundColor: palette.grey[700],
                         boxShadow: "0.1rem 0.1rem 0.1rem 0.1rem rgba(0,0,0,.4)"
                     }}
                 >
-                    {isPredictions? "Hide" : "Show"} prediction
+                    {isPredictions ? "Hide" : "Show"} prediction
                 </Button>
             </FlexBetween>
             <ResponsiveContainer width="100%" height="100%">
-                    <LineChart
-                        data={formattedData}
-                        margin={{
-                            top: 20,
-                            right: 75,
-                            left: 20,
-                            bottom: 100,
-                        }}
+                <LineChart
+                    data={formattedData}
+                    margin={{
+                        top: 20,
+                        right: 75,
+                        left: 20,
+                        bottom: 100,
+                    }}
+                >
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={palette.grey[800]} />
+                    <XAxis
+                        dataKey="date"
+                        tickLine={false}
+                        style={{ fontSize: "12px" }}
                     >
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={palette.grey[800]} />
-                        <XAxis
-                            dataKey="date"
-                            tickLine={false}
-                            style={{ fontSize: "12px" }}    
-                        >
-                            <Label value="Month" offset={-15} position="insideBottom" />    
-                        </XAxis>
-                        <YAxis
-                            axisLine={false}
-                            style={{ fontSize: "12px" }}
-                            // tickFormatter={(v) => `$${v}`}
-                        >
-                            <Label 
-                                value="Revenue ($'000)"
-                                angle={-90}
-                                offset={0}
-                                position="insideLeft"
-                            />
-                        </YAxis>
-                        <Tooltip />
-                        <Legend verticalAlign="top" />
+                        <Label value="Month" offset={-15} position="insideBottom" />
+                    </XAxis>
+                    <YAxis
+                        axisLine={false}
+                        style={{ fontSize: "12px" }}
+                        domain={[yMin, yMax]} // Set Y-axis domain with buffer
+                    >
+                        <Label 
+                            value="Revenue ($'000)"
+                            angle={-90}
+                            position="insideLeft"
+                        />
+                    </YAxis>
+                    <Tooltip />
+                    <Legend verticalAlign="top" />
+                    <Line
+                        type="monotone"
+                        dataKey="actual revenue"
+                        stroke={palette.primary.main}
+                        strokeWidth={0}
+                        dot={{ strokeWidth: 5 }}
+                    />
+                    <Line
+                        type="monotone"
+                        dataKey="regression line"
+                        stroke={palette.tertiary[500]}
+                        dot={false}
+                    />
+                    {isPredictions && (
                         <Line
                             type="monotone"
-                            dataKey="actual revenue"
-                            stroke={palette.primary.main}
-                            strokeWidth={0}
-                            dot={{ strokeWidth: 5 }}
+                            dataKey="predicted revenue"
+                            stroke={palette.secondary[500]}
                         />
-                        <Line
-                            type="monotone"
-                            dataKey="regression line"
-                            stroke={palette.tertiary[500]}
-                            dot={false}
-                        />
-                        {isPredictions && (
-                            <Line
-                                type="monotone"
-                                dataKey="predicted revenue"
-                                stroke={palette.secondary[500]}
-                            />
-                        )}
-                    </LineChart>
-                </ResponsiveContainer>
+                    )}
+                </LineChart>
+            </ResponsiveContainer>
         </DashboardBox>
-    )
+    );
 }
 
 export default Predictions;

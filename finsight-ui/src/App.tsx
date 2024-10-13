@@ -6,24 +6,35 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import NavBar from "@/components/NavBar";
 import Dashboard from "@/pages/dashboard";
 import Predictions from "@/pages/predictions";
+import Login from "./pages/login";
+import AuthProvider from "./components/AuthProvider";
+import PrivateRoute from "./components/PrivateRoute";
+
+const API = "http://localhost:3000"
 
 function App() {
 
-  const theme = useMemo(() => createTheme(themeSettings), [])
+  	const theme = useMemo(() => createTheme(themeSettings), [])
 
     return (
     	<>
 			<BrowserRouter>
-				<ThemeProvider theme={theme}>
-					<CssBaseline />
-					<Box width="100%" padding="1rem 2rem 4rem 2rem">
-						<NavBar />
-						<Routes>
-							<Route path="/" element={<Dashboard />}/>
-							<Route path="/predictions" element={<Predictions />}/>
-						</Routes>
-					</Box>
-				</ThemeProvider>
+				<AuthProvider>
+					<ThemeProvider theme={theme}>
+						<CssBaseline />
+						<Box width="100%" padding="1rem 2rem 4rem 2rem">
+							<NavBar />
+							<Routes>
+								<Route path="/login" element={<Login />} />
+								<Route path="/" element={<PrivateRoute />} >
+									<Route path="dashboard" element={<Dashboard />}/>
+									<Route path="predictions" element={<Predictions />}/>
+								</Route>
+								<Route path="*" element={<h3 style={{ color: "white" }}>Page not found!</h3>} />
+							</Routes>
+						</Box>
+					</ThemeProvider>
+				</AuthProvider>	
 			</BrowserRouter>
     	</>
     );
