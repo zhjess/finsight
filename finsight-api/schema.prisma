@@ -27,14 +27,14 @@ model Transaction {
   transactionProducts TransactionProduct[]
   customer            String
   userId              String
-  users               User            @relation(fields: [userId], references: [id])
+  users               User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Product {
   id            String          @id @default(cuid())
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
-  description   String
+  description   String          @unique
   price         Int
   expense       Int
   transactionProducts TransactionProduct[]
@@ -45,9 +45,9 @@ model TransactionProduct {
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   transactionId String
-  transaction   Transaction     @relation(fields: [transactionId], references: [id])
+  transaction   Transaction     @relation(fields: [transactionId], references: [id], onDelete: Cascade)
   productId     String
-  product       Product         @relation(fields: [productId], references: [id])
+  product       Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
   quantity      Int
 
   @@unique([transactionId, productId])
@@ -61,7 +61,7 @@ model Day {
   revenue       Int             // cents instead of fractional dollar
   expenses      Int             // cents instead of fractional dollar
   kpiId         String
-  kpi           Kpi             @relation(fields: [kpiId], references: [id])
+  kpi           Kpi             @relation(fields: [kpiId], references: [id], onDelete: Cascade)
 }
 
 model Month {
@@ -74,7 +74,7 @@ model Month {
   operationalExpenses     Int        // cents instead of fractional dollar
   nonOperationalExpenses  Int        // cents instead of fractional dollar
   kpiId                   String
-  kpi                     Kpi        @relation(fields: [kpiId], references: [id])
+  kpi                     Kpi        @relation(fields: [kpiId], references: [id], onDelete: Cascade)
 }
 
 model Kpi {
@@ -86,7 +86,7 @@ model Kpi {
   totalExpenses         Int       // Store in cents
   expensesByCategory    Json      // JSON to store expenses by category
   userId                String
-  user                  User      @relation(fields: [userId], references: [id])
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   monthlyData           Month[]  
   dailyData             Day[]    
 }

@@ -1,9 +1,9 @@
-import DashboardBox from "@/components/DashboardBox";
 import { useGetKpisQuery } from "@/state/api";
 import { ResponsiveContainer, AreaChart, XAxis, YAxis, Tooltip, Area, Line, CartesianGrid, Legend, LineChart, BarChart, Bar, Rectangle } from "recharts";
 import React, { useMemo } from "react";
 import { useTheme } from "@mui/material";
-import BoxHeader from "@/components/BoxHeader";
+import DashBoxHeader from "@/components/DashBoxHeader";
+import DashBox from "@/components/DashBox";
 
 const Row1 = () => {
     const { palette } = useTheme();
@@ -14,9 +14,9 @@ const Row1 = () => {
             data &&
             data[0].monthlyData.map(({ date, revenue, expenses}) => {
                 const d = new Date(date);
-                const monthName = new Intl.DateTimeFormat("en-US", { month: "long" }).format(d);
+                const monthName = new Intl.DateTimeFormat("en-US", { month: "short" }).format(d);
                 return {
-                    date: monthName.substring(0, 3),
+                    date: monthName,
                     revenue: (revenue / 100000).toFixed(2), // Denomination: $'000
                     expenses: (expenses / 100000).toFixed(2) // Denomination: $'000
                 };
@@ -29,9 +29,9 @@ const Row1 = () => {
             data &&
             data[0].monthlyData.map(({ date, revenue, expenses}) => {
                 const d = new Date(date);
-                const monthName = new Intl.DateTimeFormat("en-US", { month: "long" }).format(d);
+                const monthName = new Intl.DateTimeFormat("en-US", { month: "short" }).format(d);
                 return {
-                    date: monthName.substring(0, 3),
+                    date: monthName,
                     revenue: (revenue / 100000).toFixed(2), // Denomination: $'000
                     profit: ((revenue - expenses) / 100000).toFixed(2) // Denomination: $'000
                 };
@@ -44,9 +44,9 @@ const Row1 = () => {
             data &&
             data[0].monthlyData.map(({ date, revenue }) => {
                 const d = new Date(date);
-                const monthName = new Intl.DateTimeFormat("en-US", { month: "long" }).format(d);
+                const monthName = new Intl.DateTimeFormat("en-US", { month: "short" }).format(d);
                 return {
-                    date: monthName.substring(0, 3),
+                    date: monthName,
                     revenue: (revenue / 100000).toFixed(2), // Denomination: $'000
                 };
             })
@@ -55,8 +55,8 @@ const Row1 = () => {
 
     return (
         <>
-            <DashboardBox gridArea="a">
-                <BoxHeader
+            <DashBox gridArea="a">
+                <DashBoxHeader
                     title="Revenue and Expenses"
                     subtitle="displayed in $'000"
                     sideText="+X.X%"
@@ -114,10 +114,10 @@ const Row1 = () => {
                         />
                     </AreaChart>
                 </ResponsiveContainer>
-            </DashboardBox>
+            </DashBox>
             
-            <DashboardBox gridArea="b">
-                <BoxHeader
+            <DashBox gridArea="b">
+                <DashBoxHeader
                         title="Revenue and Profit"
                         subtitle="displayed in $'000"
                         sideText="+X.X%"
@@ -168,10 +168,10 @@ const Row1 = () => {
                         />
                     </LineChart>
                 </ResponsiveContainer>
-            </DashboardBox>
+            </DashBox>
 
-            <DashboardBox gridArea="c">
-                <BoxHeader
+            <DashBox gridArea="c">
+                <DashBoxHeader
                     title="Revenue Month by Month"
                     subtitle="displayed in $'000"
                     sideText="+X.X%"
@@ -206,7 +206,7 @@ const Row1 = () => {
                         />
                     </BarChart>
                 </ResponsiveContainer>
-            </DashboardBox>
+            </DashBox>
         </>
     );
 }

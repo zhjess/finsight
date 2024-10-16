@@ -8,6 +8,7 @@ import kpiRoutes from "./routes/kpi";
 import productRoutes from "./routes/product";
 import transactionRoutes from "./routes/transaction";
 import loginRoutes from "./routes/login";
+import transactionProductRoutes from "./routes/transactionProduct";
 
 // Configuration
 dotenv.config();
@@ -28,5 +29,6 @@ app.use("/login", loginRoutes);
 app.use("/kpi", kpiRoutes);
 app.use("/product", productRoutes);
 app.use("/transaction", transactionRoutes);
+app.use("/transactionproduct", transactionProductRoutes);
 
 export default app;

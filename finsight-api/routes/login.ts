@@ -35,8 +35,8 @@ loginRoutes.post("/", async (req, res) => {
         );
         res.status(200).json({ token: token });
     } catch (err) {
-        console.log("🚀 ~ loginRoutes.post ~ err:", err)
-        res.status(500).json({message: err.message});
+        console.log("🚀 ~ loginRoutes.post ~ err:", err);
+        res.status(500).json({ message: "An error occurred while logging in" });
     }
 });
 

@@ -26,6 +26,15 @@ export interface Month {
     kpiId: string;
 }
 
+export interface Product {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    description: string;
+    price: number;
+    expense: number;
+}
+
 export interface GetKpisResponse {
     id: string;
     createdAt: string;
@@ -87,6 +96,47 @@ export interface GetTransactionsResponse {
     transactionTotal: number;
 }
 
+export interface CreateTransactionResponse {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    customer: string;
+    userId: string;
+}
+
+export interface CreateTransactionRequest {
+    transaction: any;
+}
+
+export interface UpdateTransactionResponse {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    customer: string;
+    userId: string;
+}
+
+export interface UpdateTransactionRequest {
+    transactionId: string;
+    customer: string;
+    transactionProducts: Array<{ productId: string, quantity: number }>;
+}
+
+export interface DeleteTransactionResponse {
+    message: string;
+    transaction: Transaction;
+}
+
+export interface DeleteTransactionRequest {
+    transactionId: string;
+}
+
+export interface GetTransactionProductsResponse {
+    product: Product;
+    totalQuantity: number;
+    totalRevenue: number;
+}
+
 export interface LoginResponse {
     token: string;
 }
@@ -94,4 +144,50 @@ export interface LoginResponse {
 export interface LoginRequest {
     email: string;
     password: string;
+}
+
+export interface updateProductResponse {
+    message: string;
+    product: Product;
+}
+
+export interface updateProductRequest {
+    id: string;
+    description: string;
+    expense: number;
+    price: number;    
+}
+
+export interface createProductResponse {
+    product: Product;
+}
+
+export interface createProductRequest {
+    description: string;
+    expense: number;
+    price: number;
+}
+
+export interface DeleteProductResponse {
+    message: string;
+    product: Product;
+}
+
+export interface DeleteProductRequest {
+    productId: string;
+}
+
+export interface createTransactionProductResponse {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    transactionId: string;
+    productId: string;
+    quantity: number;
+}
+
+export interface createTransactionProductRequest {
+    transactionId: string;
+    productId: string;
+    quantity: number;
 }

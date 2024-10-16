@@ -8,32 +8,32 @@ const hashPassword = async function(password: string, saltRounds: number) {
 };
 
 const productList = [
-    { description: 'Product A', price: 7000, expense: 3000 },
-    { description: 'Product B', price: 9000, expense: 4000 },
+    { description: 'Product A', price: 7000, expense: 3054 },
+    { description: 'Product B', price: 9050, expense: 4000 },
     { description: 'Product C', price: 8000, expense: 3500 },
     { description: 'Product D', price: 6000, expense: 2500 },
-    { description: 'Product E', price: 8000, expense: 3500 },
+    { description: 'Product E', price: 8095, expense: 3500 },
     { description: 'Product F', price: 7500, expense: 2800 },
     { description: 'Product G', price: 3000, expense: 1200 },
-    { description: 'Product H', price: 4000, expense: 1500 },
-    { description: 'Product I', price: 6500, expense: 7500 },
-    { description: 'Product J', price: 9000, expense: 4000 },
-    { description: 'Product K', price: 8500, expense: 3700 },
+    { description: 'Product H', price: 4050, expense: 1500 },
+    { description: 'Product I', price: 6500, expense: 7595 },
+    { description: 'Product J', price: 9040, expense: 4000 },
+    { description: 'Product K', price: 8580, expense: 3700 },
     { description: 'Product L', price: 7200, expense: 3100 },
     { description: 'Product M', price: 9500, expense: 4500 },
-    { description: 'Product N', price: 11000, expense: 5000 },
-    { description: 'Product O', price: 6800, expense: 2900 },
+    { description: 'Product N', price: 11000, expense: 5025 },
+    { description: 'Product O', price: 6800, expense: 2910 },
     { description: 'Product P', price: 7400, expense: 3300 },
-    { description: 'Product Q', price: 6200, expense: 2400 },
-    { description: 'Product R', price: 8000, expense: 3600 },
+    { description: 'Product Q', price: 6200, expense: 2415 },
+    { description: 'Product R', price: 8060, expense: 3600 },
     { description: 'Product S', price: 7700, expense: 3200 },
-    { description: 'Product T', price: 9600, expense: 4600 },
+    { description: 'Product T', price: 9695, expense: 4625 },
     { description: 'Product U', price: 9000, expense: 4200 },
-    { description: 'Product V', price: 5400, expense: 2300 },
-    { description: 'Product W', price: 8900, expense: 4100 },
-    { description: 'Product X', price: 7200, expense: 3000 },
+    { description: 'Product V', price: 5400, expense: 2340 },
+    { description: 'Product W', price: 8950, expense: 4155 },
+    { description: 'Product X', price: 7200, expense: 3065 },
     { description: 'Product Y', price: 7500, expense: 3500 },
-    { description: 'Product Z', price: 10000, expense: 4800 },
+    { description: 'Product Z', price: 10000, expense: 4895 },
 ];
 
 async function main() {
@@ -82,42 +82,30 @@ async function main() {
             createTransactionProduct(productList[10], 5),
             createTransactionProduct(productList[11], 1),
         ]),
-        createTransaction('Customer C', [
+        createTransaction('Customer D', [
             createTransactionProduct(productList[12], 2),
             createTransactionProduct(productList[13], 1),
         ]),
-        createTransaction('Customer D', [
+        createTransaction('Customer E', [
             createTransactionProduct(productList[14], 8),
             createTransactionProduct(productList[15], 1),
         ]),
-        createTransaction('Customer E', [
+        createTransaction('Customer F', [
             createTransactionProduct(productList[16], 2),
         ]),
-        createTransaction('Customer F', [
+        createTransaction('Customer G', [
             createTransactionProduct(productList[18], 4),
         ]),
-        createTransaction('Customer G', [
+        createTransaction('Customer H', [
             createTransactionProduct(productList[19], 2),
         ]),
-        createTransaction('Customer H', [
-            createTransactionProduct(productList[20], 2),
-        ]),
         createTransaction('Customer I', [
-            createTransactionProduct(productList[21], 2),
-            createTransactionProduct(productList[22], 3),
-        ]),
-        createTransaction('Customer J', [
-            createTransactionProduct(productList[23], 4),
-            createTransactionProduct(productList[24], 2),
-        ]),
-        createTransaction('Customer K', [
-            createTransactionProduct(productList[25], 10),
+            createTransactionProduct(productList[20], 2),
         ]),
     ];
 
     const transactions2 = [
         createTransaction('Customer I', [
-            createTransactionProduct(productList[21], 1),
             createTransactionProduct(productList[22], 5),
         ]),
         createTransaction('Customer J', [
@@ -151,25 +139,40 @@ async function main() {
         },
     });
 
-    const totalRevenue = 500000;
-    const totalExpenses = 350000;
+    // Calculate total revenue and expenses
+    const calculateTotals = (transactions) => {
+        let totalRevenue = 0;
+        let totalExpenses = 0;
 
-    const supplies = 120000;
-    const salaries = 140000;
-    const services = 90000;
+        transactions.forEach(transaction => {
+            transaction.transactionProducts.create.forEach(tp => {
+                totalRevenue += tp.product.create.price * tp.quantity;
+                totalExpenses += tp.product.create.expense * tp.quantity;
+            });
+        });
 
-    const expensesByCategory = {
-        supplies,
-        salaries,
-        services,
+        return { totalRevenue, totalExpenses };
     };
+
+    const { totalRevenue: revenue1, totalExpenses: expenses1 } = calculateTotals(transactions1);
+    const { totalRevenue: revenue2, totalExpenses: expenses2 } = calculateTotals(transactions2);
+
+    const totalRevenue = revenue1 + revenue2;
+    const totalExpenses = expenses1 + expenses2;
+
+    console.log(`Total Revenue from Transactions: ${totalRevenue}`);
+    console.log(`Total Expenses from Transactions: ${totalExpenses}`);
 
     const kpi = await prisma.kpi.create({
         data: {
             totalProfit: totalRevenue - totalExpenses,
             totalRevenue: totalRevenue,
             totalExpenses: totalExpenses,
-            expensesByCategory: expensesByCategory,
+            expensesByCategory: {
+                supplies: 120000,
+                salaries: 140000,
+                services: 90000,
+            },
             userId: user1.id,
         },
     });
@@ -177,13 +180,13 @@ async function main() {
     const currentYear = new Date().getFullYear();
 
     for (let month = 0; month < 12; month++) {
-        const baseRevenue = 600000 + Math.floor(Math.random() * 200000); // range 6000 to 7999
-        const baseExpenses = 300000 + Math.floor(Math.random() * 100000);  // range 3000 to 3999
+        const baseRevenue = 600000 + Math.floor(Math.random() * 200000);
+        const baseExpenses = 300000 + Math.floor(Math.random() * 100000);
 
-        const monthlyRevenue = baseRevenue + Math.floor(Math.random() * 50000) - 20000; // add fluctuation of range -2000 to 4999
-        const monthlyExpenses = baseExpenses + Math.floor(Math.random() * 50000) - 20000; // add fluctuation of range -2000 to 4999
+        const monthlyRevenue = baseRevenue + Math.floor(Math.random() * 50000) - 20000;
+        const monthlyExpenses = baseExpenses + Math.floor(Math.random() * 50000) - 20000;
 
-        const monthEntry = await prisma.month.create({
+        await prisma.month.create({
             data: {
                 date: new Date(currentYear, month, 1),
                 revenue: Math.max(monthlyRevenue, 0),
@@ -199,7 +202,7 @@ async function main() {
             if (day > 30 && [3, 5, 8, 10].includes(month)) break;
 
             const dailyRevenue = 25000 + Math.floor(Math.random() * 20000);
-            const dailyExpenses = Math.min(dailyRevenue, 20000 + Math.floor(Math.random() * 10000)); // Keep below daily revenue
+            const dailyExpenses = Math.min(dailyRevenue, 20000 + Math.floor(Math.random() * 10000));
 
             await prisma.day.create({
                 data: {

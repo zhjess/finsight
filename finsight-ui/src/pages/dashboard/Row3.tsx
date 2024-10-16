@@ -1,18 +1,28 @@
-import BoxHeader from "@/components/BoxHeader";
-import DashboardBox from "@/components/DashboardBox";
+import DashBoxHeader from "@/components/DashBoxHeader";
+import DashBox from "@/components/DashBox";
 import FlexBetween from "@/components/FlexBetween";
-import { useGetKpisQuery, useGetProductsQuery, useGetTransactionsQuery } from "@/state/api";
+import { useGetKpisQuery, useGetTopTransactionProductsQuery, useGetLatestTransactionsQuery } from "@/state/api";
 import { Box, Typography, useTheme } from "@mui/material";
-import { DataGrid, GridCellParams } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import React, { useMemo } from "react";
 import { Cell, Pie, PieChart } from "recharts";
+import { formatDate } from "@/utils/dateUtils";
 
 const Row3 = () => {
     const { palette } = useTheme();
     const pieColors = [palette.primary[500],palette.primary[800]];
 
-    const { data: productData } = useGetProductsQuery();
-    const { data: transactionData } = useGetTransactionsQuery();
+    const { data: productData } = useGetTopTransactionProductsQuery();
+    const productDataFormatted = productData?.map(product => {
+        return {
+            id: product.product.id,
+            description: product.product.description,
+            totalQuantity: product.totalQuantity,
+            totalRevenue: product.totalRevenue
+        };
+    });
+    
+    const { data: transactionData } = useGetLatestTransactionsQuery();
     const { data: kpiData } = useGetKpisQuery();
 
     const pieChartData = useMemo(() => {
@@ -38,26 +48,32 @@ const Row3 = () => {
     }, [kpiData]);
 
     const productColumns = [
-        { field: "id", headerName: "ID", flex: 1.3 },
         { field: "description", headerName: "Name", flex: 0.5 },
-        { field: "expense", headerName: "Expense", flex: 0.5, valueFormatter: (value: number) => `$${(value / 100).toLocaleString()}`},
-        { field: "price", headerName: "Price", flex: 0.5, valueFormatter: (value: number) => `$${(value / 100).toLocaleString()}`}
+        { field: "id", headerName: "Product ID", flex: 1 },
+        { field: "totalRevenue", headerName: "Total revenue", flex: 0.5, valueFormatter: (value: number) => `$${(value / 100).toFixed(2)}` }
     ];
 
     const transactionColumns = [
-        { field: "createdAt", headerName: "Created at", flex: 0.9 },
-        { field: "id", headerName: "ID", flex: 1 },
-        // { field: "customer", headerName: "Customer", flex: 0.5 },
-        { field: "transactionTotal", headerName: "Total", flex: 0.4, valueFormatter: (value: number) => `$${(value / 100).toLocaleString()}`}
+        {
+            field: "updatedAt",
+            headerName: "Updated at",
+            flex: 0.7,
+            renderCell: (params: any) => {
+                const date = new Date(params.value);
+                return formatDate(date);
+            },
+         },
+        { field: "id", headerName: "Transaction ID", flex: 1 },
+        { field: "transactionTotal", headerName: "Total", flex: 0.5, valueFormatter: (value: number) => `$${(value / 100).toFixed(2)}`}
     ];
 
     return (
         <>
-            <DashboardBox gridArea="g">
-                <BoxHeader
-                    title="Product List"
-                    subtitle="This is a list of products"
-                    sideText={`${productData?.length} products`}
+            <DashBox gridArea="g">
+                <DashBoxHeader
+                    title="Top-Selling Products"
+                    subtitle="by sales revenue"
+                    sideText={`Top ${productData?.length} products`}
                 />
                 <Box 
                     m="0.5rem"
@@ -84,13 +100,13 @@ const Row3 = () => {
                         columnHeaderHeight={25}
                         rowHeight={35}
                         hideFooter={true}
-                        rows={productData || []}
+                        rows={productDataFormatted || []}
                         columns={productColumns}
                     />
                 </Box>
-            </DashboardBox>
-            <DashboardBox gridArea="h">
-                <BoxHeader
+            </DashBox>
+            <DashBox gridArea="h">
+                <DashBoxHeader
                     title="Recent Sales"
                     subtitle="This is a list of recent sales"
                     sideText={`${transactionData?.length} latest transactions`}
@@ -125,9 +141,9 @@ const Row3 = () => {
                         columns={transactionColumns}
                     />
                 </Box>
-            </DashboardBox>
-            <DashboardBox gridArea="i">
-                <BoxHeader
+            </DashBox>
+            <DashBox gridArea="i">
+                <DashBoxHeader
                     title="Expense breakdown by category"
                     subtitle="This is a breakdown of expenses by category"
                     sideText="XX.XX"
@@ -153,9 +169,9 @@ const Row3 = () => {
                     </Box>
                 ))}
                 </FlexBetween>
-            </DashboardBox>
-            <DashboardBox gridArea="j">
-                <BoxHeader
+            </DashBox>
+            <DashBox gridArea="j">
+                <DashBoxHeader
                     title="Overall Summary and Explanation Data"
                     subtitle="This is a sample subtitle"
                     sideText="+XX.X%"
@@ -179,7 +195,7 @@ const Row3 = () => {
                 <Typography margin="0 1rem" variant="h6">
                     Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias fugiat consectetur voluptas doloremque sunt voluptatibus aperiam maxime et nesciunt? A, dolorum fugit sunt nemo consectetur quisquam? Error ea molestiae aliquid!
                 </Typography>
-            </DashboardBox>
+            </DashBox>
         </>
     )
 }

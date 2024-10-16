@@ -1,5 +1,5 @@
-import BoxHeader from "@/components/BoxHeader";
-import DashboardBox from "@/components/DashboardBox";
+import DashBoxHeader from "@/components/DashBoxHeader";
+import DashBox from "@/components/DashBox";
 import FlexBetween from "@/components/FlexBetween";
 import { useGetKpisQuery, useGetProductsQuery } from "@/state/api";
 import { Box, Typography, useTheme } from "@mui/material";
@@ -23,9 +23,9 @@ const Row2 = () => {
             kpiData &&
             kpiData[0].monthlyData.map(({ date, operationalExpenses, nonOperationalExpenses}) => {
                 const d = new Date(date);
-                const monthName = new Intl.DateTimeFormat("en-US", { month: "long" }).format(d);
+                const monthName = new Intl.DateTimeFormat("en-US", { month: "short" }).format(d);
                 return {
-                    date: monthName.substring(0, 3),
+                    date: monthName,
                     operationalExpenses: (operationalExpenses / 100000).toFixed(2), // Denomination: $'000
                     nonOperationalExpenses: (nonOperationalExpenses / 100000).toFixed(2) // Denomination: $'000
                 };
@@ -48,8 +48,8 @@ const Row2 = () => {
 
     return (
         <>
-            <DashboardBox gridArea="d">
-                <BoxHeader
+            <DashBox gridArea="d">
+                <DashBoxHeader
                         title="Operational vs. Non-operational Expenses"
                         subtitle="displayed in $'000"
                         sideText="+X.X%"
@@ -99,9 +99,9 @@ const Row2 = () => {
                         />
                     </LineChart>
                 </ResponsiveContainer>
-            </DashboardBox>
-            <DashboardBox gridArea="e">
-                <BoxHeader
+            </DashBox>
+            <DashBox gridArea="e">
+                <DashBoxHeader
                     title="Targets"
                     subtitle="displayed in $'000"
                     sideText="+X.X%"
@@ -141,9 +141,9 @@ const Row2 = () => {
                         <Typography variant="h6">Margins up XX.X% from last month</Typography>
                     </Box>
                 </FlexBetween>
-            </DashboardBox>
-            <DashboardBox gridArea="f">
-                <BoxHeader
+            </DashBox>
+            <DashBox gridArea="f">
+                <DashBoxHeader
                     title="Product Prices vs. Expenses"
                     subtitle="This is a sample subtitle"
                     sideText="+X.X%"
@@ -181,7 +181,7 @@ const Row2 = () => {
                         <Scatter name="Product Expense Ratio" data={productPricesExpenses} fill={palette.tertiary[500]} />
                     </ScatterChart>
                 </ResponsiveContainer>
-            </DashboardBox>
+            </DashBox>
         </>
     )
 }

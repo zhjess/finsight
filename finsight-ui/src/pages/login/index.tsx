@@ -1,9 +1,7 @@
-import DashboardBox from "@/components/DashboardBox";
+import DashBox from "@/components/DashBox";
 import { useAuth } from "@/components/AuthProvider";
-import { useLoginMutation } from "@/state/api";
 import { Box, Button, Card, FormControl, FormLabel, TextField, Typography, useTheme } from "@mui/material";
 import React from "react";
-import { useNavigate } from "react-router-dom";
 
 const Login = () => {
     const { palette } = useTheme();
@@ -65,7 +63,7 @@ const Login = () => {
     };
 
     return (
-        <DashboardBox maxWidth="500px" height="60vh" p="3rem" margin="auto">
+        <DashBox maxWidth="500px" height="60vh" p="3rem" margin="auto">
             <Box width="100%" mb="1.5rem">
                 <Typography variant="h3">Sign in</Typography>
             </Box>
@@ -147,7 +145,7 @@ const Login = () => {
                     </Box>
                 </Card>
             </Box>
-        </DashboardBox>
+        </DashBox>
     );
 };
 

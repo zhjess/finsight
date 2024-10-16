@@ -1,14 +1,21 @@
 import { useState } from 'react';
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import TroubleshootIcon from '@mui/icons-material/Troubleshoot';
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, Button, Typography, useTheme } from '@mui/material';
 import FlexBetween from './FlexBetween';
+import { useAuth } from './AuthProvider';
 
-type Props = {}
-
-const NavBar = (props: Props) => {
+const NavBar = () => {
     const { palette } = useTheme();
-    const [selected, setSelected] = useState("dashboard");
+    const location = useLocation();
+    
+    const [selected, setSelected] = useState(location.pathname.slice(1));
+    const auth = useAuth();
+
+    const handleLogout = () => {
+        auth?.logoutAction();
+    };
+
     return (
         <FlexBetween mb="0.25rem" p="0.5rem 0rem" color={palette.grey[300]}>
             <FlexBetween gap="0.75rem">
@@ -41,6 +48,29 @@ const NavBar = (props: Props) => {
                     >
                         predictions
                     </Link>
+                </Box>
+                <Box sx={{ "&:hover": {color: palette.primary[100]} }}>
+                    <Link 
+                        to="/manage"
+                        onClick={() => setSelected("manage")}
+                        style={{
+                            textDecoration: "inherit",
+                            color: selected === "manage" ? "inherit" : palette.grey[700]
+                        }}
+                    >
+                        manage data
+                    </Link>
+                </Box>
+                <Box sx={{ "&:hover": {color: palette.primary[100]} }}>  
+                    <Button 
+                        onClick={() => handleLogout()}
+                        style={{
+                            textDecoration: "inherit",
+                            color: selected === "logout" ? "inherit" : palette.grey[700]
+                        }}
+                    >
+                        log out
+                    </Button>
                 </Box>
             </FlexBetween>
         </FlexBetween>

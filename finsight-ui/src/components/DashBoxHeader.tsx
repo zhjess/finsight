@@ -6,10 +6,10 @@ type Props = {
     icon?: React.ReactNode;
     title: string;
     subtitle?: string;
-    sideText: string;
+    sideText?: string;
 }
 
-const BoxHeader = ({ icon, title, subtitle, sideText }: Props) => {
+const DashBoxHeader = ({ icon, title, subtitle, sideText }: Props) => {
     const { palette } = useTheme();
     return (
         <FlexBetween
@@ -34,4 +34,4 @@ const BoxHeader = ({ icon, title, subtitle, sideText }: Props) => {
     );
 };
 
-export default BoxHeader
+export default DashBoxHeader
