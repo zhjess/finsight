@@ -11,6 +11,7 @@ import AuthProvider from "./components/AuthProvider";
 import PrivateRoute from "./components/PrivateRoute";
 import NavBarRender from "./components/NavBarRender";
 import Manage from "./pages/manage";
+import LoginExpired from "./pages/login/LoginExpired";
 
 const API = "http://localhost:3000"
 
@@ -30,6 +31,7 @@ function App() {
 							</NavBarRender>
 							<Routes>
 								<Route path="/login" element={<Login />} />
+								<Route path="/expired" element={<LoginExpired />}/>
 								<Route path="/" element={<PrivateRoute />} >
 									<Route path="dashboard" element={<Dashboard />}/>
 									<Route path="predictions" element={<Predictions />}/>

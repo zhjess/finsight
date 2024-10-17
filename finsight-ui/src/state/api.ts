@@ -5,18 +5,25 @@ const baseQuery = fetchBaseQuery({
     baseUrl: import.meta.env.VITE_BASE_URL,
     prepareHeaders: (headers) => {
         const token = localStorage.getItem("jwtToken");
-
         if (token) {
             headers.set('Authorization', `Bearer ${token}`);
         }
-
         return headers;
     },
 });
 
+const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
+    let result = await baseQuery(args, api, extraOptions);
+
+    if (result.error && result.error.status === 401) {
+        window.location.href = "/expired";
+    }
+    return result;
+};
+
 export const api = createApi({
     reducerPath: "api",
-    baseQuery,
+    baseQuery: baseQueryWithReauth,
     tagTypes: ["Kpis", "Products", "Transactions", "Latest Transactions", "Transaction Products"],
     endpoints: (builder) => ({
         login: builder.mutation<LoginResponse, LoginRequest> ({
