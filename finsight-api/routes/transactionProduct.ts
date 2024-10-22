@@ -1,8 +1,10 @@
 import { Router, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import prisma from '../prisma/prisma';
+import { authenticateUser } from '../middleware/userAuth';
 
-const prisma = new PrismaClient();
 const transactionProductRoutes = Router();
+transactionProductRoutes.use(authenticateUser);
 
 const getProductsByIds = async (productIds: string[]) => {
     return await prisma.product.findMany({
@@ -13,7 +15,7 @@ const getProductsByIds = async (productIds: string[]) => {
         },
     });
 };
-// format result to include total quantity/revenue for each product
+// to include total quantity/revenue for each product and sort descending
 const formatResult = (transactionProducts: any[], products: any[]) => {
     const productMap: { [key: number]: any } = {};
 
@@ -34,8 +36,8 @@ const formatResult = (transactionProducts: any[], products: any[]) => {
     }).sort((a, b) => (b.totalRevenue || 0) - (a.totalRevenue || 0)).slice(0, 10);
 };
 
-// Route to get transaction products
-transactionProductRoutes.get("/transactionproducts/top", async (req: Request, res: Response) => {
+// Route to get top transaction products (sales)
+transactionProductRoutes.get("/transactionproducts/sales/top", async (req: Request, res: Response) => {
     try {
         const transactionProducts = await prisma.transactionProduct.groupBy({
             by: ['productId'],
@@ -47,7 +49,7 @@ transactionProductRoutes.get("/transactionproducts/top", async (req: Request, re
         const productIds: string[] = transactionProducts.map(item => item.productId);
         const products = await getProductsByIds(productIds);
 
-        const result = formatResult(transactionProducts, products);
+        const result = formatResult(transactionProducts, products); // taking top 10
         res.status(200).json(result);
     } catch (err) {
         console.error("Error retrieving transaction products:", err);

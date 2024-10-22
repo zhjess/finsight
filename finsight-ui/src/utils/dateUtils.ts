@@ -8,7 +8,7 @@ export const formatDate = (date: any) => {
         hour12: false as const,
         timeZone: "Australia/Sydney" as const
     };
-    return new Intl.DateTimeFormat('en-US', options).format(date);
+    return new Intl.DateTimeFormat('en-UK', options).format(date);
 };
 
 export const parseDate = (dateString: string): Date => {

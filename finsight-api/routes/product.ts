@@ -1,17 +1,31 @@
 import express from "express";
 import prisma from "../prisma/prisma";
+import { authenticateUser } from "../middleware/userAuth";
 
 const productRoutes = express.Router();
+productRoutes.use(authenticateUser);
 
 productRoutes.get("/products", async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 100;
+    const offset = (page - 1) * limit;
+
     try {
+        const totalProducts = await prisma.product.count();
+        
         const products = await prisma.product.findMany({
             orderBy: { description: 'asc'},
             include: {
                 transactionProducts: true
                 }
             })
-        res.status(200).json(products);
+        res.status(200).json({
+            products: products,
+            totalProducts: totalProducts,
+            page,
+            totalPages: Math.ceil(totalProducts / limit)
+
+        });
     } catch (err) {
         console.log("🚀 ~ productRoutes.get ~ err:", err)
         res.status(500).json({ message: "An error ocurred while retrieving products" });
@@ -35,9 +49,10 @@ productRoutes.post("/create", async (req, res) => {
     }
 });
 
-productRoutes.put("/update", async (req, res) => {
+productRoutes.put("/update/:id", async (req, res) => {
     try {
-        const { productId, description, price, expense } = req.body;
+        const productId = req.params.id;
+        const { description, price, expense } = req.body;
         const updatedProduct = await prisma.product.update({
             where: { id: productId },
             data: {
@@ -53,9 +68,9 @@ productRoutes.put("/update", async (req, res) => {
     }
 });
 
-productRoutes.delete("/delete", async (req, res) => {
+productRoutes.delete("/delete/:id", async (req, res) => {
     try {
-        const { productId } = req.body;
+        const productId = req.params.id;
         const deletedProduct = await prisma.product.delete({
             where: { id: productId }
         });

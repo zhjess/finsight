@@ -1,7 +1,7 @@
 import DashBoxHeader from "@/components/DashBoxHeader";
 import DashBox from "@/components/DashBox";
 import FlexBetween from "@/components/FlexBetween";
-import { useGetKpisQuery, useGetTopTransactionProductsQuery, useGetLatestTransactionsQuery } from "@/state/api";
+import { useGetKpisQuery, useGetRevenueTransactionsLatestQuery, useGetTransactionProductsTopQuery } from "@/state/api";
 import { Box, Typography, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import React, { useMemo } from "react";
@@ -12,7 +12,7 @@ const Row3 = () => {
     const { palette } = useTheme();
     const pieColors = [palette.primary[500],palette.primary[800]];
 
-    const { data: productData } = useGetTopTransactionProductsQuery();
+    const { data: productData } = useGetTransactionProductsTopQuery();
     const productDataFormatted = productData?.map(product => {
         return {
             id: product.product.id,
@@ -21,8 +21,8 @@ const Row3 = () => {
             totalRevenue: product.totalRevenue
         };
     });
-    
-    const { data: transactionData } = useGetLatestTransactionsQuery();
+    const transactionsToLoad = "10";
+    const { data: transactionData } = useGetRevenueTransactionsLatestQuery(transactionsToLoad);
     const { data: kpiData } = useGetKpisQuery();
 
     const pieChartData = useMemo(() => {
@@ -55,8 +55,8 @@ const Row3 = () => {
 
     const transactionColumns = [
         {
-            field: "updatedAt",
-            headerName: "Updated at",
+            field: "date",
+            headerName: "Date",
             flex: 0.7,
             renderCell: (params: any) => {
                 const date = new Date(params.value);

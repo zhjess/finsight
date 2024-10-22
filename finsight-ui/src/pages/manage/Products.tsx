@@ -1,31 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DashBox from "@/components/DashBox";
 import DashBoxHeader from "@/components/DashBoxHeader";
 import FlexBetween from "@/components/FlexBetween";
-import { useCreateProductMutation, useGetProductsQuery, useUpdateProductMutation } from "@/state/api";
+import { useCreateProductMutation, useDeleteProductMutation, useGetProductsQuery, useUpdateProductMutation } from "@/state/api";
 import { Box, FormControl, FormHelperText, FormLabel, IconButton, InputAdornment, TextField, useTheme } from "@mui/material";
 import { DataGrid, GridCellParams } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import CustomModal from "@/components/CustomModal";
 import AddButton from "@/components/AddButton";
+import PageNumberNav from "@/components/PageNumberNav";
 
 const Products = () => {
     const { palette } = useTheme();
-    const { data: productData, refetch } = useGetProductsQuery();
-    const [createProduct] = useCreateProductMutation();
-    const [updateProduct] = useUpdateProductMutation();
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const limit = 100;
     const [modalType, setModalType] = useState<"add" | "edit" | null>(null);
     const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
     const [formData, setFormData] = useState({ description: "", expense: "", price: "" });
     const [errors, setErrors] = useState({ description: "", expense: "", price: "" });
+
+    const { data: productData, refetch } = useGetProductsQuery({ page: currentPage, limit: limit });
+    const [createProduct] = useCreateProductMutation();
+    const [updateProduct] = useUpdateProductMutation();
+    const [deleteProduct] = useDeleteProductMutation();
 
     const handleModalOpen = (type: "add" | "edit", productId?: string) => {
         setModalType(type);
         if (type === "add") {
             resetForm();
         } else if (type === "edit" && productId) {
-            const productToEdit = productData?.find((p) => p.id === productId);
+            const productToEdit = productData?.products?.find((p) => p.id === productId);
             if (productToEdit) {
                 setSelectedProductId(productToEdit.id);
                 setFormData({
@@ -35,6 +40,14 @@ const Products = () => {
                 });
             }
         }
+    };
+
+    const handleNextPage = () => {
+        setCurrentPage((prev) => prev + 1);
+    };
+
+    const handlePreviousPage = () => {
+        setCurrentPage((prev) => Math.max(prev - 1, 1));
     };
 
     const resetForm = () => {
@@ -77,7 +90,7 @@ const Products = () => {
         if (!formData.expense) newErrors.expense = "Expense is required";
         if (!formData.price) newErrors.price = "Price is required";
         setErrors(newErrors);
-        return Object.values(newErrors).every((error) => error === ""); //
+        return Object.values(newErrors).every((error) => error === "");
     };
 
     const handleSubmit = async () => {
@@ -93,12 +106,27 @@ const Products = () => {
             if (modalType === "add") {
                 await createProduct(product);
             } else if (modalType === "edit" && selectedProductId) {
-                await updateProduct({ id: selectedProductId, ...product });
+                await updateProduct({ id: selectedProductId, product });
             }
             await refetch();
             handleModalClose();
         } catch (err) {
             console.error(err);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (selectedProductId) {
+            const confirmed = window.confirm("Are you sure you want to delete this product?");
+            if (confirmed) {
+                try {
+                    await deleteProduct(selectedProductId);
+                    await refetch();
+                    handleModalClose();
+                } catch (err) {
+                    console.error(err);
+                }
+            }
         }
     };
 
@@ -127,7 +155,7 @@ const Products = () => {
     const renderModalContent = () => (
         <Box margin="2rem 1rem">
             <FormControl fullWidth>
-                <FormLabel sx={{ marginBottom: "1rem" }}><b>{modalType === "add" ? "Enter new product details:" : "Update existing product details:"}</b></FormLabel>
+                <FormLabel sx={{ fontSize: "medium", marginBottom: "1.5rem" }}><b>{modalType === "add" ? "Enter new product details:" : "Update existing product details:"}</b></FormLabel>
                 <Box>
                     <TextField
                         label="Product name"
@@ -186,7 +214,7 @@ const Products = () => {
             <Box
                 m="0.5rem"
                 p="0 0.5rem"
-                height="90%"
+                height="88%"
                 sx={{
                     "& .MuiDataGrid-root": { color: palette.grey[500], border: "none" },
                     "& .MuiDataGrid-cell": { border: "none", borderBottom: `1px solid ${palette.grey[800]} !important` },
@@ -198,16 +226,24 @@ const Products = () => {
                     columnHeaderHeight={25}
                     rowHeight={35}
                     hideFooter
-                    rows={productData || []}
+                    rows={productData?.products || []}
                     columns={productColumns}
                 />
             </Box>
-            {/* Modal components */}
+            <Box display="flex" alignItems="center" justifyContent="center" margin="1.5rem 1rem">
+                <PageNumberNav
+                    currentPage={currentPage}
+                    totalPages={productData?.totalPages ?? 0}
+                    handlePreviousPage={handlePreviousPage}
+                    handleNextPage={handleNextPage}
+                />
+            </Box>
             <CustomModal
                 open={modalType !== null}
                 title={modalType === "add" ? "ADD NEW PRODUCT" : "EDIT EXISTING PRODUCT"}
                 onSave={handleSubmit}
                 onClose={handleModalClose}
+                onDelete={modalType === "edit" ? handleDelete : undefined}
                 content={renderModalContent()}
             />
         </DashBox>

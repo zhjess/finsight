@@ -1,6 +1,6 @@
 import { Box, useMediaQuery } from "@mui/material";
-import Transactions from "./Transactions";
-import Expenses from "./Expenses";
+import Transactions from "./RevenueTransactions";
+import Expenses from "./ExpenseTransactions";
 import Products from "./Products";
 
 // const gridTemplateLargeScreens = `

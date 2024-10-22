@@ -13,7 +13,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@prisma/client": "^5.20.0",
+    "@prisma/client": "^5.21.0",
     "@vercel/postgres": "^0.10.0",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
@@ -22,11 +22,11 @@
     "express": "^4.21.0",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
-    "morgan": "^1.10.0",
-    "prisma": "^5.20.0"
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
-    "@types/node": "^22.7.5",
+    "@types/node": "^22.7.6",
+    "prisma": "^5.21.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.1",
     "typescript": "^5.6.2"

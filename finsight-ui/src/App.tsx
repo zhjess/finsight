@@ -12,6 +12,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import NavBarRender from "./components/NavBarRender";
 import Manage from "./pages/manage";
 import LoginExpired from "./pages/login/LoginExpired";
+import RedirectToLogin from "./pages/login/RedirectToLogin";
 
 const API = "http://localhost:3000"
 
@@ -30,6 +31,7 @@ function App() {
 								<NavBar />
 							</NavBarRender>
 							<Routes>
+								<Route path="/" element={<RedirectToLogin />} />
 								<Route path="/login" element={<Login />} />
 								<Route path="/expired" element={<LoginExpired />}/>
 								<Route path="/" element={<PrivateRoute />} >

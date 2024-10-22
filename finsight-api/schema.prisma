@@ -11,46 +11,77 @@ datasource db {
 }
 
 model User {
-  id            String          @id @default(cuid()) 
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  email         String          @unique
-  password      String          // store hashed password
-  transactions  Transaction[]
-  kpis          Kpi[]
+  id                  String                @id @default(cuid()) 
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  email               String                @unique
+  password            String                // store hashed password
+  revenueTransactions RevenueTransaction[]
+  expenseTransactions ExpenseTransaction[]
+  kpis                Kpi[]
 }
 
-model Transaction {
-  id                  String          @id @default(cuid())
-  createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
-  transactionProducts TransactionProduct[]
-  customer            String
-  userId              String
-  users               User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+model RevenueTransaction {
+  id                    String               @id @default(cuid())
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  date                  DateTime
+  transactionProducts   TransactionProduct[]
+  customer              String
+  userId                String
+  user                  User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ExpenseTransaction {
+  id                    String               @id @default(cuid())
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  date                  DateTime
+  counterparty          String
+  userId                String
+  user                  User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount                Int
+  expenseCategoryId     String
+  expenseCategory       ExpenseCategory      @relation(fields: [expenseCategoryId], references: [id], onDelete: Cascade)
+}
+Neymar
+model ExpenseCategory {
+  id                  String              @id @default(cuid())
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  description         String              @unique
+  expenseTransactions ExpenseTransaction[]
+  expenseTypeId       String
+  expenseType         ExpenseType         @relation(fields: [expenseTypeId], references: [id], onDelete: Cascade)
+}
+
+model ExpenseType {
+  id                  String              @id @default(cuid())
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  description         String              @unique
+  expenseCategories   ExpenseCategory[]
 }
 
 model Product {
-  id            String          @id @default(cuid())
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  description   String          @unique
-  price         Int
-  expense       Int
+  id                  String          @id @default(cuid())
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  description         String          @unique
+  price               Int
+  expense             Int
   transactionProducts TransactionProduct[]
 }
 
 model TransactionProduct {
-  id            String          @id @default(cuid())
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  transactionId String
-  transaction   Transaction     @relation(fields: [transactionId], references: [id], onDelete: Cascade)
-  productId     String
-  product       Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
-  quantity      Int
-
-  @@unique([transactionId, productId])
+  id                    String              @id @default(cuid())
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  revenueTransactionId  String
+  revenueTransaction    RevenueTransaction  @relation(fields: [revenueTransactionId], references: [id], onDelete: Cascade)
+  productId             String
+  product               Product             @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity              Int
 }
 
 model Day {
@@ -60,8 +91,8 @@ model Day {
   date          DateTime      
   revenue       Int             // cents instead of fractional dollar
   expenses      Int             // cents instead of fractional dollar
-  kpiId         String
-  kpi           Kpi             @relation(fields: [kpiId], references: [id], onDelete: Cascade)
+  kpiId         String?
+  kpi           Kpi?            @relation(fields: [kpiId], references: [id], onDelete: Cascade)
 }
 
 model Month {
@@ -73,8 +104,8 @@ model Month {
   expenses                Int        // cents instead of fractional dollar
   operationalExpenses     Int        // cents instead of fractional dollar
   nonOperationalExpenses  Int        // cents instead of fractional dollar
-  kpiId                   String
-  kpi                     Kpi        @relation(fields: [kpiId], references: [id], onDelete: Cascade)
+  kpiId                   String?
+  kpi                     Kpi?       @relation(fields: [kpiId], references: [id], onDelete: Cascade)
 }
 
 model Kpi {
@@ -87,6 +118,6 @@ model Kpi {
   expensesByCategory    Json      // JSON to store expenses by category
   userId                String
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  monthlyData           Month[]  
-  dailyData             Day[]    
+  monthlyData           Month[]
+  dailyData             Day[]
 }

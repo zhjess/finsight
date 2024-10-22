@@ -7,12 +7,12 @@ import DashBox from "@/components/DashBox";
 
 const Row1 = () => {
     const { palette } = useTheme();
-    const { data } = useGetKpisQuery();
+    const { data: kpiData } = useGetKpisQuery();
 
     const revenueExpenses = useMemo(() => {
         return (
-            data &&
-            data[0].monthlyData.map(({ date, revenue, expenses}) => {
+            kpiData &&
+            kpiData[0].monthlyData.map(({ date, revenue, expenses}) => {
                 const d = new Date(date);
                 const monthName = new Intl.DateTimeFormat("en-US", { month: "short" }).format(d);
                 return {
@@ -22,12 +22,12 @@ const Row1 = () => {
                 };
             })
         );
-    }, [data]);
+    }, [kpiData]);
 
     const revenueProfit = useMemo(() => {
         return (
-            data &&
-            data[0].monthlyData.map(({ date, revenue, expenses}) => {
+            kpiData &&
+            kpiData[0].monthlyData.map(({ date, revenue, expenses}) => {
                 const d = new Date(date);
                 const monthName = new Intl.DateTimeFormat("en-US", { month: "short" }).format(d);
                 return {
@@ -37,12 +37,12 @@ const Row1 = () => {
                 };
             })
         );
-    }, [data])
+    }, [kpiData])
     
     const revenue = useMemo(() => {
         return (
-            data &&
-            data[0].monthlyData.map(({ date, revenue }) => {
+            kpiData &&
+            kpiData[0].monthlyData.map(({ date, revenue }) => {
                 const d = new Date(date);
                 const monthName = new Intl.DateTimeFormat("en-US", { month: "short" }).format(d);
                 return {
@@ -51,7 +51,7 @@ const Row1 = () => {
                 };
             })
         );
-    }, [data])
+    }, [kpiData])
 
     return (
         <>

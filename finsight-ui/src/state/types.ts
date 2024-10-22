@@ -1,9 +1,11 @@
+// Types for Expenses
 export interface ExpensesByCategory {
     supplies: number;
     salaries: number;
     services: number;
 }
 
+// Types for Date-related Data
 export interface Day {
     id: string;
     createdAt: string;
@@ -26,6 +28,7 @@ export interface Month {
     kpiId: string;
 }
 
+// Product
 export interface Product {
     id: string;
     createdAt: string;
@@ -33,8 +36,44 @@ export interface Product {
     description: string;
     price: number;
     expense: number;
+    transactionProducts: TransactionProduct[];
 }
 
+export interface GetProductsResponse {
+    products: Product[];
+    totalProducts: number;
+    page: number;
+    totalPages: number;
+
+}
+
+export interface CreateProductRequest {
+    description: string;
+    expense: number;
+    price: number;
+}
+
+export interface CreateProductResponse {
+    product: Product;
+}
+
+export interface UpdateProductRequest {
+    description: string;
+    price: number;
+    expense: number;
+}
+
+export interface UpdateProductResponse {
+    message: string;
+    product: Product;
+}
+
+export interface DeleteProductResponse {
+    message: string;
+    product: Product;
+}
+
+// KPI
 export interface GetKpisResponse {
     id: string;
     createdAt: string;
@@ -43,141 +82,44 @@ export interface GetKpisResponse {
     totalRevenue: number;
     totalExpenses: number;
     expensesByCategory: ExpensesByCategory;
-    dailyData: Array<Day>;
-    monthlyData: Array<Month>;
+    dailyData: Day[];
+    monthlyData: Month[];
     userId: string;
 }
 
+// User
 export interface User {
     id: string;
     email: string;
     password: string;
-    transactions: Array<Transaction>;
-    kpis: Array<string>;
+    revenueTransactions: RevenueTransaction[];
+    expensesTransactions: ExpenseTransaction[];
+    kpis: string[];
 }
 
+// Transaction Product
 export interface TransactionProduct {
     id: string;
     createdAt: string;
     updatedAt: string;
-    transactionId: string;
+    revenueTransactionId: string;
     productId: string;
     quantity: number;
 }
 
-export interface Transaction {
-    id: string;
-    createdAt: string;
-    updatedAt: string;
-    amount: number;
-    transactionProducts: Array<TransactionProduct>;
-    customer: string;
-    userId: string;
-    user: User;
-}
-
-export interface GetProductsResponse {
-    id: string;
-    createdAt: string;
-    updatedAt: string;
-    description: string;
-    price: number;
-    expense: number;
-    transactions: Array<Transaction>;
-}
-
-export interface GetTransactionsResponse {
-    id: string;
-    createdAt: string;
-    updatedAt: string;
-    transactionProducts: Array<TransactionProduct>;
-    customer: string;
-    userId: string;
-    transactionTotal: number;
-}
-
-export interface CreateTransactionResponse {
-    id: string;
-    createdAt: string;
-    updatedAt: string;
-    customer: string;
-    userId: string;
-}
-
-export interface CreateTransactionRequest {
-    transaction: any;
-}
-
-export interface UpdateTransactionResponse {
-    id: string;
-    createdAt: string;
-    updatedAt: string;
-    customer: string;
-    userId: string;
-}
-
-export interface UpdateTransactionRequest {
-    transactionId: string;
-    customer: string;
-    transactionProducts: Array<{ productId: string, quantity: number }>;
-}
-
-export interface DeleteTransactionResponse {
-    message: string;
-    transaction: Transaction;
-}
-
-export interface DeleteTransactionRequest {
-    transactionId: string;
-}
-
-export interface GetTransactionProductsResponse {
+export interface GetTransactionProductsTopSalesResponse {
     product: Product;
     totalQuantity: number;
     totalRevenue: number;
 }
 
-export interface LoginResponse {
-    token: string;
-}
-
-export interface LoginRequest {
-    email: string;
-    password: string;
-}
-
-export interface updateProductResponse {
-    message: string;
-    product: Product;
-}
-
-export interface updateProductRequest {
-    id: string;
-    description: string;
-    expense: number;
-    price: number;    
-}
-
-export interface createProductResponse {
-    product: Product;
-}
-
-export interface createProductRequest {
-    description: string;
-    expense: number;
-    price: number;
-}
-
-export interface DeleteProductResponse {
-    message: string;
-    product: Product;
-}
-
-export interface DeleteProductRequest {
+export interface CreateTransactionProductRequest {
+    transactionId: string;
     productId: string;
+    quantity: number;
 }
 
-export interface createTransactionProductResponse {
+export interface CreateTransactionProductResponse {
     id: string;
     createdAt: string;
     updatedAt: string;
@@ -186,8 +128,140 @@ export interface createTransactionProductResponse {
     quantity: number;
 }
 
-export interface createTransactionProductRequest {
-    transactionId: string;
-    productId: string;
-    quantity: number;
+// Revenue transaction
+export interface RevenueTransaction {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    date: string;
+    transactionProducts: { productId: string; quantity: number }[];
+    customer: string;
+    userId: string;
+    transactionTotal: number;
+}
+
+export interface GetRevenueTransactionsResponse {
+    transactions: RevenueTransaction[];
+    total: number;
+    page: number;
+    totalPages: number;
+}
+
+export interface CreateRevenueTransactionRequest {
+    date: string; // TO CHECK
+    customer: string;
+    transactionProducts: { productId: string; quantity: number }[];
+}
+
+export interface CreateRevenueTransactionResponse {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    date: string;
+    customer: string;
+    userId: string;
+    transactionProducts: TransactionProduct[];
+}
+
+export interface UpdateRevenueTransactionRequest {
+    date: string;
+    customer: string;
+    transactionProducts: { productId: string; quantity: number }[];
+}
+
+export interface UpdateRevenueTransactionResponse {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    date: string;
+    customer: string;
+    userId: string;
+    transactionProducts: TransactionProduct[];
+}
+
+export interface DeleteRevenueTransactionResponse {
+    message: string;
+    transaction: UpdateProductResponse;
+}
+
+// Expense transaction
+export interface ExpenseTransaction {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    date: string;
+    counterparty: string;
+    userId: string;
+    amount: number;
+    expenseCategoryId: string;
+    expenseCategory: { description: string};
+}
+
+export interface GetExpenseTransactionsResponse {
+    transactions: ExpenseTransaction[];
+    total: number;
+    page: number;
+    totalPages: number;
+}
+
+export interface CreateExpenseTransactionRequest {
+    date: string; // TO CHECK
+    counterparty: string;
+    amount: number;
+    expenseCategoryId: string;
+}
+
+export interface CreateExpenseTransactionResponse {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    date: string;
+    counterparty: string;
+    userId: string;
+    amount: number;
+    expenseCategoryId: string;
+    expenseCategory: { description: string};
+}
+
+export interface UpdateExpenseTransactionRequest {
+    date: string; // TO CHECK
+    counterparty: string;
+    amount: number;
+    expenseCategoryId: string;
+}
+
+export interface UpdateExpenseTransactionResponse {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    date: string;
+    counterparty: string;
+    userId: string;
+    amount: number;
+    expenseCategoryId: string;
+    expenseCategory: { description: string};
+}
+
+export interface DeleteExpenseTransactionResponse {
+    message: string;
+    transaction: UpdateExpenseTransactionResponse;
+}
+
+export interface GetExpenseCategoriesResponse {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    description: string;
+    expenseTypeId: string;
+    expenseType: { description: string };
+}
+
+// Login 
+export interface LoginRequest {
+    email: string;
+    password: string;
+}
+
+export interface LoginResponse {
+    token: string;
 }
