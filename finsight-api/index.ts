@@ -4,7 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import helmet from "helmet";
 import morgan from "morgan";
-import kpiRoutes from "./routes/kpi.js";
+import kpiRoutes from "./routes/kpi.ts";
 import productRoutes from "./routes/product.js";
 import transactionRoutes from "./routes/transaction.js";
 import loginRoutes from "./routes/login.js";
