@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
       "target": "ES2021",
-      "module": "ESNext",
+      "module": "ES6",
       "skipLibCheck": true,
   
       /* Bundler mode */
