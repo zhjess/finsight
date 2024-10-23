@@ -5,10 +5,10 @@ import dotenv from "dotenv";
 import helmet from "helmet";
 import morgan from "morgan";
 import kpiRoutes from "./routes/kpi.ts";
-import productRoutes from "./routes/product.js";
-import transactionRoutes from "./routes/transaction.js";
-import loginRoutes from "./routes/login.js";
-import transactionProductRoutes from "./routes/transactionProduct.js";
+import productRoutes from "./routes/product.ts";
+import transactionRoutes from "./routes/transaction.ts";
+import loginRoutes from "./routes/login.ts";
+import transactionProductRoutes from "./routes/transactionProduct.ts";
 
 // Configuration
 dotenv.config();
