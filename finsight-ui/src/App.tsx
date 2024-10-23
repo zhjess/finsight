@@ -14,8 +14,6 @@ import Manage from "./pages/manage";
 import LoginExpired from "./pages/login/LoginExpired";
 import RedirectToLogin from "./pages/login/RedirectToLogin";
 
-const API = "http://localhost:3000"
-
 function App() {
 
   	const theme = useMemo(() => createTheme(themeSettings), [])

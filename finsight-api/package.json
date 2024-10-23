@@ -26,6 +26,9 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
+    "@types/body-parser": "^1.19.5",
+    "@types/cors": "^2.8.17",
+    "@types/morgan": "^1.9.9",
     "@types/node": "^22.7.6",
     "prisma": "^5.21.0",
     "ts-node": "^10.9.2",
