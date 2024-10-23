@@ -1,11 +1,12 @@
 {
-  "name": "wealthwatcher-api",
+  "name": "finsight-api",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx watch index.ts",
+    "start": "tsx index.ts",
     "seed": "npx tsx prisma/seed.ts"
   },
   "keywords": [],

@@ -21,7 +21,13 @@ app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin"}));
 app.use(morgan("common"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors());
+app.use(cors(
+    {
+        origin: [""],
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+        credentials: true
+    }
+));
 
 // Routes
 app.get("/", (req, res) => {res.status(200).json({info: "Finsight API"})});
