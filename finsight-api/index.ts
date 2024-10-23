@@ -4,11 +4,11 @@ import cors from "cors";
 import dotenv from "dotenv";
 import helmet from "helmet";
 import morgan from "morgan";
-import kpiRoutes from "./routes/kpi";
-import productRoutes from "./routes/product";
-import transactionRoutes from "./routes/transaction";
-import loginRoutes from "./routes/login";
-import transactionProductRoutes from "./routes/transactionProduct";
+import kpiRoutes from "./routes/kpi.js";
+import productRoutes from "./routes/product.js";
+import transactionRoutes from "./routes/transaction.js";
+import loginRoutes from "./routes/login.js";
+import transactionProductRoutes from "./routes/transactionProduct.js";
 
 // Configuration
 dotenv.config();
