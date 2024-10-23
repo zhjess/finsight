@@ -1,8 +1,13 @@
+// @ts-ignore
 import express from "express";
+// @ts-ignore
 import bodyParser from "body-parser";
+// @ts-ignore
 import cors from "cors";
+// @ts-ignore
 import dotenv from "dotenv";
 import helmet from "helmet";
+// @ts-ignore
 import morgan from "morgan";
 import kpiRoutes from "./routes/kpi.js";
 import productRoutes from "./routes/product.js";
@@ -30,7 +35,9 @@ app.use(cors(
 ));
 
 // Routes
-app.get("/", (req, res) => {res.status(200).json({info: "Finsight API"})});
+app.get("/", (req: express.Request, res: express.Response) => {
+  res.status(200).json({ info: "Finsight API" });
+});
 app.use("/login", loginRoutes);
 app.use("/kpi", kpiRoutes);
 app.use("/product", productRoutes);
@@ -38,7 +45,7 @@ app.use("/transaction", transactionRoutes);
 app.use("/transactionproduct", transactionProductRoutes);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, (err) => {
+app.listen(PORT, (err: Error) => {
     if (err) {
         console.error(err);
     } else {
