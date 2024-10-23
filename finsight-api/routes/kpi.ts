@@ -1,3 +1,5 @@
+
+// @ts-ignore
 import express from "express";
 import prisma from "../prisma/prisma";
 import { authenticateUser } from "../middleware/userAuth";
@@ -5,7 +7,7 @@ import { authenticateUser } from "../middleware/userAuth";
 const kpiRoutes = express.Router();
 kpiRoutes.use(authenticateUser);
 
-kpiRoutes.get("/kpis", async (req, res) => {
+kpiRoutes.get("/kpis", async (req: express.Request, res: express.Response) => {
     try {
         const kpis = await prisma.kpi.findMany({
             include: {
@@ -20,7 +22,7 @@ kpiRoutes.get("/kpis", async (req, res) => {
     }
 });
 
-kpiRoutes.get("/kpis/:year", async (req, res) => {
+kpiRoutes.get("/kpis/:year", async (req: express.Request, res: express.Response) => {
   const year = parseInt(req.params.year);
   const userId = req.userId;
   
