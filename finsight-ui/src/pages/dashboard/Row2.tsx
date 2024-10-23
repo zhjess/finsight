@@ -6,28 +6,35 @@ import { Box, Typography, useTheme } from "@mui/material";
 import React, { useMemo } from "react";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis, Tooltip, PieChart, Pie, Cell, ScatterChart, Scatter, ZAxis } from "recharts";
 
-const pieData = [
-    { name: "Group A", value: 600 },
-    { name: "Group B", value: 400 }
-];
+interface Row2Props {
+    kpiYear: string;
+}
 
-const Row2 = () => {
+const Row2: React.FC<Row2Props> = ({ kpiYear }) => {
+    const year = kpiYear;
+    const salesTarget = 350000;
+
     const { palette } = useTheme();
-    const pieColors = [palette.primary[800], palette.primary[300]];
+    const pieColors = [palette.grey[800], palette.primary[500]];
 
-    const { data: kpiData } = useGetKpisQuery();
-    const { data: productData } = useGetProductsQuery();
+    const { data: kpiData } = useGetKpisQuery(year);
+    const { data: productData } = useGetProductsQuery({ page: 1, limit: 1000 });
+
+    const pieData = [
+        { name: "Target Sales", value: salesTarget - (kpiData?.totalRevenue as number / 100) },
+        { name: "Actual Sales", value: kpiData?.totalRevenue as number / 100 }
+    ];
 
     const operationalExpenses = useMemo(() => {
         return (
             kpiData &&
-            kpiData[0].monthlyData.map(({ date, operationalExpenses, nonOperationalExpenses}) => {
-                const d = new Date(date);
-                const monthName = new Intl.DateTimeFormat("en-US", { month: "short" }).format(d);
+            kpiData.monthlyData.map(({ monthEnded, totalOperational, totalNonOperational}) => {
+                const date = new Date(monthEnded);
+                const monthName = new Intl.DateTimeFormat("en-US", { month: "short" }).format(date);
                 return {
                     date: monthName,
-                    operationalExpenses: (operationalExpenses / 100000).toFixed(2), // Denomination: $'000
-                    nonOperationalExpenses: (nonOperationalExpenses / 100000).toFixed(2) // Denomination: $'000
+                    operationalExpenses: (totalOperational / 100000).toFixed(2), // Denomination: $'000
+                    nonOperationalExpenses: (totalNonOperational / 100000).toFixed(2) // Denomination: $'000
                 };
             })
         );
@@ -36,7 +43,7 @@ const Row2 = () => {
     const productPricesExpenses = useMemo(() => {
         return (
             productData &&
-            productData.map(({ id, price, expense }) => {
+            productData.products.map(({ id, price, expense }) => {
                 return {
                     id: id,
                     price: (price / 100).toFixed(2), // Denomination: $
@@ -50,7 +57,7 @@ const Row2 = () => {
         <>
             <DashBox gridArea="d">
                 <DashBoxHeader
-                        title="Operational vs. Non-operational Expenses"
+                        title="Operational vs. Non-Operational Expenses"
                         subtitle="displayed in $'000"
                         sideText="+X.X%"
                 />
@@ -102,11 +109,11 @@ const Row2 = () => {
             </DashBox>
             <DashBox gridArea="e">
                 <DashBoxHeader
-                    title="Targets"
-                    subtitle="displayed in $'000"
+                    title="Targets and Year-on-Year Metrics"
+                    subtitle="Key metrics and sales target for the year"
                     sideText="+X.X%"
                 />
-                <FlexBetween mt="0">
+                <FlexBetween mt="1rem">
                     <PieChart
                         width={110}
                         height={90}
@@ -130,15 +137,16 @@ const Row2 = () => {
                         </Pie>
                     </PieChart>
                     <Box ml="-0.7rem" flexBasis="40%" textAlign="center">
-                        <Typography variant="h5">Target sales</Typography>
-                        <Typography m="0.3rem" variant="h3" color={palette.primary[300]}>83</Typography>
-                        <Typography variant="h6">Finance goals of the campaign...</Typography>
+                        <Typography variant="h4" color={palette.grey[100]} fontStyle="bold" mb="0.5rem">Sales target</Typography>
+                        <Typography m="0.3rem" variant="h4" color={palette.primary[300]}>{`$${(kpiData?.totalRevenue as number / 100).toLocaleString()}`}</Typography>
+                        <Typography m="0.3rem" variant="h5" color={palette.grey[600]}>of</Typography>
+                        <Typography m="0.3rem" variant="h4" color={palette.primary[300]}>{`$${salesTarget.toLocaleString()}`}</Typography>
                     </Box>
-                    <Box flexBasis="40%" mr="0.5rem">
-                        <Typography variant="h5">Losses in Revenue</Typography>
-                        <Typography variant="h6">Losses are down XX.X%</Typography>
-                        <Typography mt="0.4rem" variant="h5">Profit margins</Typography>
-                        <Typography variant="h6">Margins up XX.X% from last month</Typography>
+                    <Box flexBasis="40%" mr="1rem">
+                        <Typography variant="h5" mb="0.2rem" color={palette.grey[100]} fontStyle="bold">Revenue</Typography>
+                        <Typography variant="h5"mb="1rem">+12.5% compared to this time last year</Typography>
+                        <Typography mt="0.4rem" mb="0.2rem"variant="h5" color={palette.grey[100]} fontStyle="bold">Profit margin</Typography>
+                        <Typography variant="h5">+8.7% compared to this time last year</Typography>
                     </Box>
                 </FlexBetween>
             </DashBox>

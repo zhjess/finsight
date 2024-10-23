@@ -1,31 +1,25 @@
 // Types for Expenses
 export interface ExpensesByCategory {
-    supplies: number;
-    salaries: number;
-    services: number;
+    "Cost of goods sold": number;
+    "Rent": number;
+    "Services": number;
+    "Salaries": number;
+    "Utilities": number;
 }
 
 // Types for Date-related Data
 export interface Day {
-    id: string;
-    createdAt: string;
-    updatedAt: string;
-    date: Date;
-    revenue: number;
-    expenses: number;
-    kpiId: string;
+    date: string;
+    totalRevenue: number;
+    totalExpenses: number;
 }
 
 export interface Month {
-    id: string;
-    createdAt: string;
-    updatedAt: string;
-    date: Date;
-    revenue: number;
-    expenses: number;
-    operationalExpenses: number;
-    nonOperationalExpenses: number;
-    kpiId: string;
+    monthEnded: string;
+    totalRevenue: number;
+    totalExpenses: number;
+    totalOperational: number;
+    totalNonOperational: number;
 }
 
 // Product
@@ -75,16 +69,14 @@ export interface DeleteProductResponse {
 
 // KPI
 export interface GetKpisResponse {
-    id: string;
-    createdAt: string;
-    updatedAt: string;
+    userId: string;
     totalProfit: number;
     totalRevenue: number;
     totalExpenses: number;
     expensesByCategory: ExpensesByCategory;
+    expensesByType: { totalOperational: number; totalNonOperational: number };
     dailyData: Day[];
     monthlyData: Month[];
-    userId: string;
 }
 
 // User

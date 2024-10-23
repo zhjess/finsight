@@ -7,27 +7,28 @@ import { CartesianGrid, Label, Legend, Line, LineChart, ResponsiveContainer, Too
 import regression, { DataPoint } from "regression";
 
 const Predictions = () => {
+    const year = "2023";
     const { palette } = useTheme();
     const [isPredictions, setIsPredictions] = useState<boolean>(false);
-    const { data: kpiData } = useGetKpisQuery();
+    const { data: kpiData } = useGetKpisQuery(year);
 
     const formattedData = useMemo(() => {
         if (kpiData) {
-            const monthlyData = kpiData[0].monthlyData;
+            const monthlyData = kpiData.monthlyData;
 
             const formatted: Array<DataPoint> = monthlyData.map(
-                ({ revenue }, index: number) => {
-                    return [index, revenue / 100000]; // index represents month in graph
+                ({ totalRevenue }, index: number) => {
+                    return [index, totalRevenue / 100000]; // index represents month in graph
                 }
             );
             const regressionLine = regression.linear(formatted);
 
-            return monthlyData.map(({ date, revenue }, index: number) => {
-                const d = new Date(date);
-                const monthName = new Intl.DateTimeFormat("en-US", { month: "long" }).format(d);
+            return monthlyData.map(({ monthEnded, totalRevenue }, index: number) => {
+                const date = new Date(monthEnded);
+                const monthName = new Intl.DateTimeFormat("en-US", { month: "long" }).format(date);
                 return {
                     date: monthName.substring(0, 3),
-                    "actual revenue": (revenue / 100000).toFixed(2),
+                    "actual revenue": (totalRevenue / 100000).toFixed(2),
                     "regression line": regressionLine.points[index][1],
                     "predicted revenue": regressionLine.predict(index + 12)[1]
                 };

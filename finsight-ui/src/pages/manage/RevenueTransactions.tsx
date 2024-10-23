@@ -3,7 +3,7 @@ import DashBox from "@/components/DashBox";
 import DashBoxHeader from "@/components/DashBoxHeader";
 import FlexBetween from "@/components/FlexBetween";
 import { useCreateRevenueTransactionMutation, useDeleteRevenueTransactionMutation, useGetProductsQuery, useGetRevenueTransactionsQuery, useUpdateRevenueTransactionMutation } from "@/state/api";
-import { Box, Button, FormControl, FormLabel, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, TextField, useTheme } from "@mui/material";
+import { Box, Button, FormControl, FormLabel, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, TextField, Typography, useTheme } from "@mui/material";
 import { DataGrid, GridCellParams } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import CustomModal from "@/components/CustomModal";
@@ -219,14 +219,21 @@ const RevenueTransactions = () => {
         const days = Array.from({ length: 31 }, (_, i) => i + 1);
         const months = Array.from({ length: 12 }, (_, i) => i + 1);
         const years = Array.from({ length: 11 }, (_, i) => new Date().getFullYear() - i); // last 10 years
-
+    
+        // Calculate the transaction total
+        const transactionTotal = formData.transactionProducts.reduce((accumulator, currentValue) => {
+            const product = products.find(p => p.id === currentValue.productId);
+            const price = product ? parseFloat(product.price) : 0; // Ensure price is a number
+            return accumulator + (price * currentValue.quantity);
+        }, 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    
         return (
             <Box margin="2rem 1rem">
                 <FormControl fullWidth sx={{ marginBottom: "1.5rem" }}>
-                <FormLabel sx={{ fontSize: "medium", marginBottom: "1.5rem" }}>
-                    <b>{modalType === "add" ? "Enter new transaction details:" : "Update existing transaction details:"}</b>
-                </FormLabel>
-                <FormLabel sx={{ fontSize: "small", marginBottom: "1rem"}}>Transaction details:</FormLabel>
+                    <FormLabel sx={{ fontSize: "medium", marginBottom: "1.5rem" }}>
+                        <b>{modalType === "add" ? "Enter new transaction details:" : "Update existing transaction details:"}</b>
+                    </FormLabel>
+                    <FormLabel sx={{ fontSize: "small", marginBottom: "1rem"}}>Transaction details:</FormLabel>
                     <Box display="flex" justifyContent="space-between">
                         <FormControl sx={{ flex: 1, marginRight: "1rem" }}>
                             <InputLabel size="small">Day</InputLabel>
@@ -259,7 +266,7 @@ const RevenueTransactions = () => {
                             <Select
                                 label="Year"
                                 value={formData.date.year || ""}
-                                onChange={(e) => setFormData({ ...formData, date: { ...formData.date, year: Number(e.target.value) } })}
+                                onChange={(e) => setFormData({ ...formData, date: { ...formData.date, year: Number(e.target.value) }})}
                                 size="small"
                             >
                                 {years.map(year => (
@@ -269,7 +276,7 @@ const RevenueTransactions = () => {
                         </FormControl>
                     </Box>
                 </FormControl>
-
+    
                 <FormControl fullWidth>
                     <TextField
                         label="Customer name"
@@ -340,9 +347,15 @@ const RevenueTransactions = () => {
                         <b>+</b>
                     </Button>
                 </Box>
+                <Box display="flex" justifyContent="flex-end" mt="1.5rem">
+                    <Typography variant="h4" fontWeight="bold" color={palette.grey[700]}>Transaction total:</Typography>
+                    <Typography variant="h4" fontWeight="bold" color={palette.grey[700]}ml="1.5rem">${transactionTotal}</Typography>
+                </Box>
+
             </Box>
         );
     };
+    
 
     return (
         <DashBox height="90vh">

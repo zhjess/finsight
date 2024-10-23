@@ -35,8 +35,8 @@ export const api = createApi({
             })
         }),
         // kpi
-        getKpis: builder.query<Array<GetKpisResponse>, void>({
-            query: () => "kpi/kpis",
+        getKpis: builder.query<GetKpisResponse, string>({
+            query: (year) => `kpi/kpis/${year}`,
             providesTags: ["Kpis"]
         }),
         // product

@@ -2,14 +2,14 @@ import React from "react"
 import FlexBetween from "./FlexBetween"
 import { Box, Typography, useTheme } from "@mui/material"
 
-type Props = {
+type DashBoxHeaderProps = {
     icon?: React.ReactNode;
     title: string;
     subtitle?: string;
     sideText?: string;
 }
 
-const DashBoxHeader = ({ icon, title, subtitle, sideText }: Props) => {
+const DashBoxHeader: React.FC<DashBoxHeaderProps> = ({ icon, title, subtitle, sideText }) => {
     const { palette } = useTheme();
     return (
         <FlexBetween

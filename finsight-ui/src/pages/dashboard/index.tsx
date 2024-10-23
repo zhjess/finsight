@@ -48,6 +48,8 @@ const gridTemplateSmallScreens = `
     "j"
 `;
 
+const kpiYear = "2023";
+
 const Dashboard = () => {
     const isAboveMediumScreens = useMediaQuery("(min-width: 1200px)");
     return (
@@ -59,14 +61,14 @@ const Dashboard = () => {
                     gridTemplateAreas: gridTemplateLargeScreens,
                 } : {
                     gridAutoColumns: "1fr",
-                    gridAutoRows: "80px",
+                    gridAutoRows: "100px",
                     gridTemplateAreas: gridTemplateSmallScreens,
                 }
             }
         >
-            <Row1 />
-            <Row2 />
-            <Row3 />
+            <Row1 kpiYear={kpiYear} />
+            <Row2 kpiYear={kpiYear} />
+            <Row3 kpiYear={kpiYear} />
         </Box>
     );
 };

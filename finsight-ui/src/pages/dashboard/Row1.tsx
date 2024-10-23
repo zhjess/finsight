@@ -5,20 +5,27 @@ import { useTheme } from "@mui/material";
 import DashBoxHeader from "@/components/DashBoxHeader";
 import DashBox from "@/components/DashBox";
 
-const Row1 = () => {
-    const { palette } = useTheme();
-    const { data: kpiData } = useGetKpisQuery();
+interface Row1Props {
+    kpiYear: string;
+}
 
+const Row1: React.FC<Row1Props> = ({ kpiYear }) => {
+    const year = kpiYear;
+
+    const { palette } = useTheme();
+    
+    const { data: kpiData } = useGetKpisQuery(year);
+ 
     const revenueExpenses = useMemo(() => {
         return (
             kpiData &&
-            kpiData[0].monthlyData.map(({ date, revenue, expenses}) => {
-                const d = new Date(date);
-                const monthName = new Intl.DateTimeFormat("en-US", { month: "short" }).format(d);
+            kpiData.monthlyData.map(({ monthEnded, totalRevenue, totalExpenses }) => {
+                const date = new Date(monthEnded);
+                const monthName = new Intl.DateTimeFormat("en-US", { month: "short" }).format(date);
                 return {
                     date: monthName,
-                    revenue: (revenue / 100000).toFixed(2), // Denomination: $'000
-                    expenses: (expenses / 100000).toFixed(2) // Denomination: $'000
+                    revenue: (totalRevenue / 100000).toFixed(2), // Denomination: $'000
+                    expenses: (totalExpenses / 100000).toFixed(2) // Denomination: $'000
                 };
             })
         );
@@ -27,13 +34,13 @@ const Row1 = () => {
     const revenueProfit = useMemo(() => {
         return (
             kpiData &&
-            kpiData[0].monthlyData.map(({ date, revenue, expenses}) => {
-                const d = new Date(date);
-                const monthName = new Intl.DateTimeFormat("en-US", { month: "short" }).format(d);
+            kpiData.monthlyData.map(({ monthEnded, totalRevenue, totalExpenses}) => {
+                const date = new Date(monthEnded);
+                const monthName = new Intl.DateTimeFormat("en-US", { month: "short" }).format(date);
                 return {
                     date: monthName,
-                    revenue: (revenue / 100000).toFixed(2), // Denomination: $'000
-                    profit: ((revenue - expenses) / 100000).toFixed(2) // Denomination: $'000
+                    revenue: (totalRevenue / 100000).toFixed(2), // Denomination: $'000
+                    profit: ((totalRevenue - totalExpenses) / 100000).toFixed(2) // Denomination: $'000
                 };
             })
         );
@@ -42,12 +49,12 @@ const Row1 = () => {
     const revenue = useMemo(() => {
         return (
             kpiData &&
-            kpiData[0].monthlyData.map(({ date, revenue }) => {
-                const d = new Date(date);
-                const monthName = new Intl.DateTimeFormat("en-US", { month: "short" }).format(d);
+            kpiData.monthlyData.map(({ monthEnded, totalRevenue }) => {
+                const date = new Date(monthEnded);
+                const monthName = new Intl.DateTimeFormat("en-US", { month: "short" }).format(date);
                 return {
                     date: monthName,
-                    revenue: (revenue / 100000).toFixed(2), // Denomination: $'000
+                    revenue: (totalRevenue / 100000).toFixed(2), // Denomination: $'000
                 };
             })
         );

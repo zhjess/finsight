@@ -80,171 +80,176 @@ async function main() {
         "Services",
         "Cost of goods sold",
         "Utilities",
-        "Rent"
+        "Interest expense" // non-operating
+    ].map(async (description) => {
+        const expenseTypeId = description === "Interest expense" ? nonOperationalExpenseType.id : operationalExpenseType.id;
 
-    ].map(description => 
-        prisma.expenseCategory.create({ 
+        return prisma.expenseCategory.create({ 
             data: { 
                 description, 
-                expenseTypeId: operationalExpenseType.id // Assign all to Operational for now
+                expenseTypeId 
             } 
-        })
-    ));
-
-    // Create Revenue and Expense Transactions, and Daily Data
-    let totalRevenue = 0;
-    let totalExpenses = 0;
-    const expensesByCategory: { [key: string]: number } = {};
-    
-    for (let day = 1; day <= 365; day++) {
-        const date = new Date(2023, 0, day); // January 1, 2023 to December 31, 2023
-
-        // Generate random revenue and expense data with an increasing trend
-        const revenueAmount = Math.floor(Math.random() * 8000) + 20000; // Random revenue amount between 20,000 and 28,000
-        const expenseAmount = Math.floor(Math.random() * 7000) + 10000; // Random expense amount between 10,000 and 17,000
-
-        totalRevenue += revenueAmount;
-        totalExpenses += expenseAmount;
-
-        // Assign expense to a random category
-        const categoryIndex = Math.floor(Math.random() * expenseCategories.length);
-        const expenseCategory = expenseCategories[categoryIndex].description;
-        expensesByCategory[expenseCategory] = (expensesByCategory[expenseCategory] || 0) + expenseAmount;
-
-        // Create daily data
-        const dayEntry = await prisma.day.create({
-            data: {
-                date,
-                revenue: revenueAmount,
-                expenses: expenseAmount,
-                // Initially, kpiId will be null, we will link it after KPI creation
-            },
         });
+    }));
 
-        // Create Revenue Transaction
-        await prisma.revenueTransaction.create({
+    // Function to generate data for a given year
+    const generateYearData = async (year: number) => {
+        let totalRevenue = 0;
+        let totalExpenses = 0;
+        const expensesByCategory: { [key: string]: number } = {};
+        
+        for (let day = 1; day <= 365; day++) {
+            const date = new Date(year, 0, day); // January 1 to December 31 of the specified year
+
+            // Generate random revenue and expense data with an increasing trend
+            const revenueAmount = Math.floor(Math.random() * 8000) + 20000; // Random revenue amount between 20,000 and 28,000
+            const expenseAmount = Math.floor(Math.random() * 7000) + 10000; // Random expense amount between 10,000 and 17,000
+
+            totalRevenue += revenueAmount;
+            totalExpenses += expenseAmount;
+
+            // Assign expense to a random category
+            const categoryIndex = Math.floor(Math.random() * expenseCategories.length);
+            const expenseCategory = expenseCategories[categoryIndex].description;
+            expensesByCategory[expenseCategory] = (expensesByCategory[expenseCategory] || 0) + expenseAmount;
+
+            // Create daily data
+            const dayEntry = await prisma.day.create({
+                data: {
+                    date,
+                    revenue: revenueAmount,
+                    expenses: expenseAmount,
+                },
+            });
+
+            // Create Revenue Transaction
+            await prisma.revenueTransaction.create({
+                data: {
+                    date,
+                    customer: `Customer ${day}`,
+                    userId: user.id,
+                    transactionProducts: {
+                        create: [
+                            {
+                                productId: products[day % products.length].id,
+                                quantity: Math.floor(Math.random() * 5) + 1, // Random quantity
+                            },
+                        ],
+                    },
+                },
+            });
+
+            // Create Expense Transaction
+            await prisma.expenseTransaction.create({
+                data: {
+                    date,
+                    counterparty: `Counterparty ${day}`,
+                    userId: user.id,
+                    amount: expenseAmount,
+                    expenseCategoryId: expenseCategories[categoryIndex].id,
+                },
+            });
+        }
+
+        // Create KPI
+        const kpi = await prisma.kpi.create({
             data: {
-                date,
-                customer: `Customer ${day}`,
+                totalProfit: totalRevenue - totalExpenses,
+                totalRevenue,
+                totalExpenses,
+                expensesByCategory,
                 userId: user.id,
-                transactionProducts: {
-                    create: [
-                        {
-                            productId: products[day % products.length].id,
-                            quantity: Math.floor(Math.random() * 5) + 1, // Random quantity
-                        },
-                    ],
-                },
             },
         });
 
-        // Create Expense Transaction
-        await prisma.expenseTransaction.create({
+        // Update Day entries with kpiId
+        await prisma.day.updateMany({
+            where: {},
             data: {
-                date,
-                counterparty: `Counterparty ${day}`,
-                userId: user.id,
-                amount: expenseAmount,
-                expenseCategoryId: expenseCategories[categoryIndex].id,
-            },
-        });
-    }
-
-    // Create KPI
-    const kpi = await prisma.kpi.create({
-        data: {
-            totalProfit: totalRevenue - totalExpenses,
-            totalRevenue,
-            totalExpenses,
-            expensesByCategory,
-            userId: user.id,
-            // Monthly and daily data will be linked after creation
-        },
-    });
-
-    // Update Day entries with kpiId
-    await prisma.day.updateMany({
-        where: {},
-        data: {
-            kpiId: kpi.id,
-        },
-    });
-
-    // Create Monthly Data
-    for (let month = 0; month < 12; month++) {
-        const startOfMonth = new Date(2023, month, 1);
-        const endOfMonth = new Date(2023, month + 1, 0); // Last day of the month
-
-        // Calculate monthly totals
-        const monthlyRevenue = await prisma.day.aggregate({
-            _sum: {
-                revenue: true,
-            },
-            where: {
-                date: {
-                    gte: startOfMonth,
-                    lte: endOfMonth,
-                },
-            },
-        });
-
-        const monthlyExpenses = await prisma.day.aggregate({
-            _sum: {
-                expenses: true,
-            },
-            where: {
-                date: {
-                    gte: startOfMonth,
-                    lte: endOfMonth,
-                },
-            },
-        });
-
-        // Calculate operational and non-operational expenses
-        const operationalExpenses = await prisma.expenseTransaction.aggregate({
-            _sum: {
-                amount: true,
-            },
-            where: {
-                date: {
-                    gte: startOfMonth,
-                    lte: endOfMonth,
-                },
-                expenseCategory: {
-                    expenseTypeId: operationalExpenseType.id,
-                },
-            },
-        });
-
-        const nonOperationalExpenses = await prisma.expenseTransaction.aggregate({
-            _sum: {
-                amount: true,
-            },
-            where: {
-                date: {
-                    gte: startOfMonth,
-                    lte: endOfMonth,
-                },
-                expenseCategory: {
-                    expenseTypeId: nonOperationalExpenseType.id,
-                },
+                kpiId: kpi.id,
             },
         });
 
         // Create Monthly Data
-        const monthEntry = await prisma.month.create({
-            data: {
-                date: startOfMonth,
-                revenue: monthlyRevenue._sum.revenue || 0,
-                expenses: monthlyExpenses._sum.expenses || 0,
-                operationalExpenses: operationalExpenses._sum.amount || 0,
-                nonOperationalExpenses: nonOperationalExpenses._sum.amount || 0,
-                kpiId: kpi.id, // Link to the created KPI
-            },
-        });
-    }
+        for (let month = 0; month < 12; month++) {
+            const startOfMonth = new Date(year, month, 1);
+            const endOfMonth = new Date(year, month + 1, 0); // Last day of the month
 
-    console.log("Seed data generated!");
+            // Calculate monthly totals
+            const monthlyRevenue = await prisma.day.aggregate({
+                _sum: {
+                    revenue: true,
+                },
+                where: {
+                    date: {
+                        gte: startOfMonth,
+                        lte: endOfMonth,
+                    },
+                },
+            });
+
+            const monthlyExpenses = await prisma.day.aggregate({
+                _sum: {
+                    expenses: true,
+                },
+                where: {
+                    date: {
+                        gte: startOfMonth,
+                        lte: endOfMonth,
+                    },
+                },
+            });
+
+            // Calculate operational and non-operational expenses
+            const operationalExpenses = await prisma.expenseTransaction.aggregate({
+                _sum: {
+                    amount: true,
+                },
+                where: {
+                    date: {
+                        gte: startOfMonth,
+                        lte: endOfMonth,
+                    },
+                    expenseCategory: {
+                        expenseTypeId: operationalExpenseType.id,
+                    },
+                },
+            });
+
+            const nonOperationalExpenses = await prisma.expenseTransaction.aggregate({
+                _sum: {
+                    amount: true,
+                },
+                where: {
+                    date: {
+                        gte: startOfMonth,
+                        lte: endOfMonth,
+                    },
+                    expenseCategory: {
+                        expenseTypeId: nonOperationalExpenseType.id,
+                    },
+                },
+            });
+
+            // Create Monthly Data
+            await prisma.month.create({
+                data: {
+                    date: startOfMonth,
+                    revenue: monthlyRevenue._sum.revenue || 0,
+                    expenses: monthlyExpenses._sum.expenses || 0,
+                    operationalExpenses: operationalExpenses._sum.amount || 0,
+                    nonOperationalExpenses: nonOperationalExpenses._sum.amount || 0,
+                    kpiId: kpi.id, // Link to the created KPI
+                },
+            });
+        }
+    };
+
+    // Generate data for 2022 and 2023
+    await generateYearData(2022);
+    await generateYearData(2023);
+
+    console.log("Seed data generated for 2022 and 2023!");
 }
 
 main()

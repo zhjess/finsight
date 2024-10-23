@@ -7,10 +7,19 @@ import { DataGrid } from "@mui/x-data-grid";
 import React, { useMemo } from "react";
 import { Cell, Pie, PieChart } from "recharts";
 import { formatDate } from "@/utils/dateUtils";
+import Legend from "@/components/Legend";
+import ProgressBarChart from "@/components/ProgressBarChart";
 
-const Row3 = () => {
+interface Row2Props {
+    kpiYear: string;
+}
+
+const Row3: React.FC<Row2Props> = ({ kpiYear }) => {
+    const year = kpiYear;
+    
     const { palette } = useTheme();
-    const pieColors = [palette.primary[500],palette.primary[800]];
+    const pieColorsOperational = [palette.primary[500],palette.grey[800]];
+    const pieColorsNonOperational = [palette.tertiary[500],palette.grey[800]];
 
     const { data: productData } = useGetTransactionProductsTopQuery();
     const productDataFormatted = productData?.map(product => {
@@ -23,13 +32,13 @@ const Row3 = () => {
     });
     const transactionsToLoad = "10";
     const { data: transactionData } = useGetRevenueTransactionsLatestQuery(transactionsToLoad);
-    const { data: kpiData } = useGetKpisQuery();
+    const { data: kpiData } = useGetKpisQuery(year);
 
     const pieChartData = useMemo(() => {
         if (kpiData) {
-            const totalExpenses = kpiData[0].totalExpenses;
+            const totalExpenses = kpiData.totalExpenses;
             
-            return Object.entries(kpiData[0].expensesByCategory).map(
+            return Object.entries(kpiData.expensesByCategory).map(
                 ([key, value]) => {
                     return [
                         {
@@ -66,6 +75,13 @@ const Row3 = () => {
         { field: "id", headerName: "Transaction ID", flex: 1 },
         { field: "transactionTotal", headerName: "Total", flex: 0.5, valueFormatter: (value: number) => `$${(value / 100).toFixed(2)}`}
     ];
+
+    const progressBarWidth = () => {
+        const operationalExpenses = kpiData?.expensesByType?.totalOperational || 0;
+        const totalExpenses = kpiData?.totalExpenses || 1;
+        const width = (operationalExpenses / totalExpenses) * 100;
+        return `${width.toFixed(2)}%`
+    }    
 
     return (
         <>
@@ -143,32 +159,46 @@ const Row3 = () => {
                 </Box>
             </DashBox>
             <DashBox gridArea="i">
-                <DashBoxHeader
-                    title="Expense breakdown by category"
-                    subtitle="This is a breakdown of expenses by category"
-                    sideText="XX.XX"
-                />
-                <FlexBetween p="0 1rem" textAlign="center">
-                {pieChartData?.map((data, i) => (
-                    <Box key={`${data[0].name}-${i}`} mt="0.3rem">
-                    <PieChart width={110} height={60}>
-                        <Pie
-                        stroke="none"
-                        data={data}
-                        innerRadius={10}
-                        outerRadius={25}
-                        paddingAngle={2}
-                        dataKey="value"
-                        >
-                        {data.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={pieColors[index]} />
-                        ))}
-                        </Pie>
-                    </PieChart>
-                    <Typography variant="h5" >{data[0].name}</Typography>
-                    </Box>
-                ))}
+            <DashBoxHeader
+                title="Expense Breakdown by Category"
+                subtitle="This is a breakdown of expenses by category"
+                sideText="XX.XX"
+            />
+                <FlexBetween textAlign="center" margin="0 1rem" alignItems="center">
+                    {pieChartData?.map((data, i) => {
+                        const isInterestExpense = data[0].name === "Interest expense";
+                        return (
+                            <Box key={`${data[0].name}-${i}`} mt="0.5rem" display="flex" flexDirection="column" alignItems="center">
+                                <PieChart width={90} height={60}>
+                                    <Pie
+                                        stroke="none"
+                                        data={data}
+                                        innerRadius={10}
+                                        outerRadius={25}
+                                        dataKey="value"
+                                    >
+                                        {data.map((entry, index) => (
+                                            <Cell
+                                                key={`cell-${index}`}
+                                                fill={isInterestExpense 
+                                                    ? (index === 0 ? pieColorsNonOperational[0] : pieColorsNonOperational[1])
+                                                    : (index === 0 ? pieColorsOperational[0] : pieColorsOperational[1])}
+                                            />
+                                        ))}
+                                    </Pie>
+                                </PieChart>
+                                <Typography variant="h5" fontSize="smaller">
+                                    {kpiData ? `${((data[0].value / kpiData.totalExpenses) * 100).toFixed(1)}%` : 'N/A'}
+                                </Typography>
+                                <Typography variant="h5" fontSize="smaller">{data[0].name}</Typography>
+                            </Box>
+                        );
+                    })}
                 </FlexBetween>
+                <Box>
+                    <ProgressBarChart width={progressBarWidth()} bgColorPrimary={palette.tertiary[700]} bgColorSecondary={palette.primary[600]} ></ProgressBarChart>
+                    <Legend items={[{ name: "Operational Expenses", color: palette.primary[700]}, { name: "Non-Operational Expenses", color: palette.tertiary[700] }]}></Legend>
+                </Box>
             </DashBox>
             <DashBox gridArea="j">
                 <DashBoxHeader
@@ -188,8 +218,7 @@ const Row3 = () => {
                             bgcolor={palette.primary[600]}
                             borderRadius="1rem"
                             width="40%"
-                        >
-                        </Box>   
+                        />
                     </Box>
                 </Box>
                 <Typography margin="0 1rem" variant="h6">
