@@ -27,7 +27,13 @@ app.use(morgan("common"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-const allowedOrigins = ["http://localhost:3000", "https://finsight-six.vercel.app/"]
+const allowedOrigins = [
+    "http://localhost:3000",
+    "https://finsight-six.vercel.app",
+    "https://finsight-byibpiq38-jessicas-projects-27c811ac.vercel.app",
+    "https://finsight-git-main-jessicas-projects-27c811ac.vercel.app"
+];
+
 app.use(cors(
     {
         origin: allowedOrigins,
