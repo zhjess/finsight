@@ -73,7 +73,7 @@ transactionRoutes.get("/:id", async (req: express.Request, res: express.Response
 // Get all revenue transactions
 transactionRoutes.get("/transactions/revenue", async (req: express.Request, res: express.Response) => {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 100;
+    const limit = parseInt(req.query.limit) || 50;
     const offset = (page - 1) * limit;
 
     try {
@@ -210,7 +210,7 @@ transactionRoutes.delete("/revenue/delete/:id", async (req: express.Request, res
 // Get all expense transactions
 transactionRoutes.get("/transactions/expense", async (req: express.Request, res: express.Response) => {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 100;
+    const limit = parseInt(req.query.limit) || 50;
     const offset = (page - 1) * limit;
 
     try {
