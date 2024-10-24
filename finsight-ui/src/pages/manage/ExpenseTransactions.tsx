@@ -27,7 +27,7 @@ const ExpenseTransactions = () => {
     const { palette } = useTheme();
 
     const [currentPage, setCurrentPage] = useState(1);
-    const limit = 50;
+    const limit = 35;
     const [modalType, setModalType] = useState<"add" | "edit" | null>(null);
     const [selectedTransactionId, setSelectedTransactionId] = useState<string | null>(null);
     const [formData, setFormData] = useState({
