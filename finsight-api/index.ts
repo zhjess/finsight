@@ -26,9 +26,11 @@ app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin"}));
 app.use(morgan("common"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+const allowedOrigins = ["http://localhost:3000", "finsight-qct3p7wc2-jessicas-projects-27c811ac.vercel.app"]
 app.use(cors(
     {
-        origin: [""],
+        origin: allowedOrigins,
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
         credentials: true
     }
