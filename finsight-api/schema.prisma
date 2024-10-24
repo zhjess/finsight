@@ -44,7 +44,7 @@ model ExpenseTransaction {
   expenseCategoryId     String
   expenseCategory       ExpenseCategory      @relation(fields: [expenseCategoryId], references: [id], onDelete: Cascade)
 }
-Neymar
+
 model ExpenseCategory {
   id                  String              @id @default(cuid())
   createdAt           DateTime            @default(now())
