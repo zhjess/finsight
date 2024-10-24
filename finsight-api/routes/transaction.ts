@@ -221,6 +221,8 @@ transactionRoutes.get("/transactions/expense", async (req: express.Request, res:
         const transactions = await prisma.expenseTransaction.findMany({
             where: { userId: req.userId },
             orderBy: { date: 'desc' },
+            skip: offset,
+            take: limit,
             include: {
                 expenseCategory: {
                     select: {

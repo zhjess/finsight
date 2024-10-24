@@ -27,7 +27,7 @@ const ExpenseTransactions = () => {
     const { palette } = useTheme();
 
     const [currentPage, setCurrentPage] = useState(1);
-    const limit = 100;
+    const limit = 50;
     const [modalType, setModalType] = useState<"add" | "edit" | null>(null);
     const [selectedTransactionId, setSelectedTransactionId] = useState<string | null>(null);
     const [formData, setFormData] = useState({
@@ -44,6 +44,10 @@ const ExpenseTransactions = () => {
     const [updateTransaction] = useUpdateExpenseTransactionMutation();
     const [deleteTransaction] = useDeleteExpenseTransactionMutation();
 
+    React.useEffect(() => {
+        refetch(); // refetch when currentPage changes
+    }, [currentPage, refetch]);
+
     const handleNextPage = () => {
         setCurrentPage((prev) => prev + 1);
     };
@@ -51,17 +55,6 @@ const ExpenseTransactions = () => {
     const handlePreviousPage = () => {
         setCurrentPage((prev) => Math.max(prev - 1, 1));
     };
-
-    // const products = useMemo(() => {
-    //     if (productData) {
-    //         return productData.products.map(product => ({
-    //             id: product.id,
-    //             description: product.description,
-    //             price: (product.price / 100).toFixed(2)
-    //         }));
-    //     }
-    //     return [];
-    // }, [productData]);
 
     const resetForm = () => {
         setSelectedTransactionId(null);
@@ -114,22 +107,10 @@ const ExpenseTransactions = () => {
         });
     };
 
-    // const handleAddTransactionProduct = () => {
-    //     setFormData((prev) => ({
-    //         ...prev,
-    //         transactionProducts: [...prev.transactionProducts, { productId: "", quantity: 0 }],
-    //     }));
-    // };
-
     const validateForm = () => {
         const newErrors = { counterparty: "", amount: "" };
         if (!formData.counterparty) newErrors.counterparty = "Counterparty name is required";
         if (!formData.amount) newErrors.amount = "Expense amount is required";
-
-        // const hasProductErrors = productErrors.some((error) => error !== "");
-        // if (hasProductErrors) {
-        //     newErrors.transactionProducts = "Product name is required and quantity must be greater than 0";
-        // }
 
         setErrors(newErrors);
         return Object.values(newErrors).every((error) => error === "");

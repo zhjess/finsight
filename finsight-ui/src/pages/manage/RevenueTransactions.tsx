@@ -26,7 +26,7 @@ const RevenueTransactions = () => {
     const { palette } = useTheme();
 
     const [currentPage, setCurrentPage] = useState(1);
-    const limit = 100;
+    const limit = 50;
     const [modalType, setModalType] = useState<"add" | "edit" | null>(null);
     const [selectedTransactionId, setSelectedTransactionId] = useState<string | null>(null);
     const [formData, setFormData] = useState<FormData>({
@@ -41,6 +41,10 @@ const RevenueTransactions = () => {
     const [createTransaction] = useCreateRevenueTransactionMutation();
     const [updateTransaction] = useUpdateRevenueTransactionMutation();
     const [deleteTransaction] = useDeleteRevenueTransactionMutation();
+
+    React.useEffect(() => {
+        refetch(); // refetch when currentPage changes
+    }, [currentPage, refetch]);
 
     const handleNextPage = () => {
         setCurrentPage((prev) => prev + 1);
@@ -220,10 +224,9 @@ const RevenueTransactions = () => {
         const months = Array.from({ length: 12 }, (_, i) => i + 1);
         const years = Array.from({ length: 11 }, (_, i) => new Date().getFullYear() - i); // last 10 years
     
-        // Calculate the transaction total
         const transactionTotal = formData.transactionProducts.reduce((accumulator, currentValue) => {
             const product = products.find(p => p.id === currentValue.productId);
-            const price = product ? parseFloat(product.price) : 0; // Ensure price is a number
+            const price = product ? parseFloat(product.price) : 0; // ensure price is a number
             return accumulator + (price * currentValue.quantity);
         }, 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     
