@@ -31,7 +31,7 @@ const allowedOrigins = ["http://localhost:3000", "https://finsight-six.vercel.ap
 app.use(cors(
     {
         origin: allowedOrigins,
-        methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"],
         credentials: true
     }
 ));
