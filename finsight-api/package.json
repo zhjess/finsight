@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx watch index.ts",
     "start": "tsx index.ts",
-    "seed": "npx tsx prisma/seed.ts"
+    "seed": "npx tsx prisma/seed.ts",
+    "build": "npx prisma db push && npx prisma generate && next build"
   },
   "keywords": [],
   "author": "",
