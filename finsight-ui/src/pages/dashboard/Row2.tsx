@@ -131,6 +131,8 @@ const Row2: React.FC<Row2Props> = ({ kpiYear }) => {
                             paddingAngle={2}
                             dataKey="value"
                         >
+                        {/* 
+                        // @ts-ignore */}
                         {pieData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={pieColors[index]} />
                         ))}

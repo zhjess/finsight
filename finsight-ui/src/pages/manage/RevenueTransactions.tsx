@@ -3,7 +3,7 @@ import DashBox from "@/components/DashBox";
 import DashBoxHeader from "@/components/DashBoxHeader";
 import FlexBetween from "@/components/FlexBetween";
 import { useCreateRevenueTransactionMutation, useDeleteRevenueTransactionMutation, useGetProductsQuery, useGetRevenueTransactionsQuery, useUpdateRevenueTransactionMutation } from "@/state/api";
-import { Box, Button, FormControl, FormLabel, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, TextField, Typography, useTheme } from "@mui/material";
+import { Box, Button, FormControl, FormLabel, IconButton, InputLabel, MenuItem, Select, TextField, Typography, useTheme } from "@mui/material";
 import { DataGrid, GridCellParams } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import CustomModal from "@/components/CustomModal";

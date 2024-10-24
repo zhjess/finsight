@@ -1,4 +1,5 @@
 import { useAuth } from "@/components/AuthProvider";
+// @ts-ignore
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 

@@ -176,7 +176,9 @@ const Row3: React.FC<Row2Props> = ({ kpiYear }) => {
                                         innerRadius={10}
                                         outerRadius={25}
                                         dataKey="value"
-                                    >
+                                    > 
+                                        {/* 
+                                        // @ts-ignore */}
                                         {data.map((entry, index) => (
                                             <Cell
                                                 key={`cell-${index}`}

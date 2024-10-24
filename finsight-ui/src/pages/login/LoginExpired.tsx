@@ -1,6 +1,4 @@
-import DashBox from "@/components/DashBox";
 import { Link, Typography, useTheme } from "@mui/material";
-import React from "react";
 
 const LoginExpired = () => {
     const { palette } = useTheme();
