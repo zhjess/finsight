@@ -1,11 +1,12 @@
+// @ts-ignore
 import express from "express";
-import prisma from "../prisma/prisma";
-import { authenticateUser } from "../middleware/userAuth";
+import prisma from "../prisma/prisma.js";
+import { authenticateUser } from "../middleware/userAuth.js";
 
 const productRoutes = express.Router();
 productRoutes.use(authenticateUser);
 
-productRoutes.get("/products", async (req, res) => {
+productRoutes.get("/products", async (req: express.Request, res: express.Response) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 100;
     const offset = (page - 1) * limit;
@@ -32,7 +33,7 @@ productRoutes.get("/products", async (req, res) => {
     }
 });
 
-productRoutes.post("/create", async (req, res) => {
+productRoutes.post("/create", async (req: express.Request, res: express.Response) => {
     try {
         const { description, price, expense } = req.body;
         const newProduct = await prisma.product.create({
@@ -49,7 +50,7 @@ productRoutes.post("/create", async (req, res) => {
     }
 });
 
-productRoutes.put("/update/:id", async (req, res) => {
+productRoutes.put("/update/:id", async (req: express.Request, res: express.Response) => {
     try {
         const productId = req.params.id;
         const { description, price, expense } = req.body;
@@ -68,7 +69,7 @@ productRoutes.put("/update/:id", async (req, res) => {
     }
 });
 
-productRoutes.delete("/delete/:id", async (req, res) => {
+productRoutes.delete("/delete/:id", async (req: express.Request, res: express.Response) => {
     try {
         const productId = req.params.id;
         const deletedProduct = await prisma.product.delete({

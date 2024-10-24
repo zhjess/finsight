@@ -1,6 +1,7 @@
+// @ts-ignore
 import express from "express";
-import prisma from "../prisma/prisma";
-import { authenticateUser } from "../middleware/userAuth";
+import prisma from "../prisma/prisma.js";
+import { authenticateUser } from "../middleware/userAuth.js";
 import { RevenueTransaction, TransactionProduct } from "@prisma/client";
 
 const transactionRoutes = express.Router();
@@ -9,6 +10,11 @@ transactionRoutes.use(authenticateUser);
 interface RevenueTransactionWithTotal extends RevenueTransaction {
     transactionProducts: TransactionProduct[];
     transactionTotal?: number;
+}
+
+interface Product {
+    productId: string;
+    quantity: number;
 }
 
 const formatTransactions = async (transactions: RevenueTransactionWithTotal[]): Promise<RevenueTransactionWithTotal[]> => {
@@ -24,7 +30,7 @@ const formatTransactions = async (transactions: RevenueTransactionWithTotal[]): 
     }));
 } 
 // Search by transaction id (revenue or expense)
-transactionRoutes.get("/:id", async (req, res) => {
+transactionRoutes.get("/:id", async (req: express.Request, res: express.Response) => {
     try {
         const transactionId = req.params.id;
         
@@ -65,7 +71,7 @@ transactionRoutes.get("/:id", async (req, res) => {
 
 // REVENUE TRANSACTIONS
 // Get all revenue transactions
-transactionRoutes.get("/transactions/revenue", async (req, res) => {
+transactionRoutes.get("/transactions/revenue", async (req: express.Request, res: express.Response) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 100;
     const offset = (page - 1) * limit;
@@ -103,7 +109,7 @@ transactionRoutes.get("/transactions/revenue", async (req, res) => {
 });
 
 // Get X most recent revenue transactions
-transactionRoutes.get("/transactions/revenue/latest/:limit", async (req, res) => {
+transactionRoutes.get("/transactions/revenue/latest/:limit", async (req: express.Request, res: express.Response) => {
     try {
         const limit = req.params.limit;
         const transactions = await prisma.revenueTransaction.findMany({
@@ -128,14 +134,14 @@ transactionRoutes.get("/transactions/revenue/latest/:limit", async (req, res) =>
 });
 
 // Create revenue transaction
-transactionRoutes.post("/revenue/create", async (req, res) => {
+transactionRoutes.post("/revenue/create", async (req: express.Request, res: express.Response) => {
     try {
         const { date, transactionProducts, customer } = req.body;
         const newTransaction = await prisma.revenueTransaction.create({
             data: {
                 transactionProducts: {
                     createMany: {
-                        data: transactionProducts.map(product => ({
+                        data: transactionProducts.map((product: Product) => ({
                             productId: product.productId,
                             quantity: product.quantity
                         }))
@@ -157,7 +163,7 @@ transactionRoutes.post("/revenue/create", async (req, res) => {
 });
 
 // Update revenue transaction
-transactionRoutes.put("/revenue/update/:id", async (req, res) => {
+transactionRoutes.put("/revenue/update/:id", async (req: express.Request, res: express.Response) => {
     try {
         const transactionId = req.params.id;
         const { date, customer, transactionProducts } = req.body;
@@ -184,7 +190,7 @@ transactionRoutes.put("/revenue/update/:id", async (req, res) => {
 });
 
 // Delete revenue transaction
-transactionRoutes.delete("/revenue/delete/:id", async (req, res) => {
+transactionRoutes.delete("/revenue/delete/:id", async (req: express.Request, res: express.Response) => {
     try {
         const transactionId = req.params.id;
         const deletedTransaction = await prisma.revenueTransaction.delete({
@@ -202,7 +208,7 @@ transactionRoutes.delete("/revenue/delete/:id", async (req, res) => {
 
 // EXPENSE TRANSACTION
 // Get all expense transactions
-transactionRoutes.get("/transactions/expense", async (req, res) => {
+transactionRoutes.get("/transactions/expense", async (req: express.Request, res: express.Response) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 100;
     const offset = (page - 1) * limit;
@@ -236,7 +242,7 @@ transactionRoutes.get("/transactions/expense", async (req, res) => {
 });
 
 // Get all expense categories
-transactionRoutes.get("/transactions/expense/categories", async (req, res) => {
+transactionRoutes.get("/transactions/expense/categories", async (req: express.Request, res: express.Response) => {
     try {
         const categories = await prisma.expenseCategory.findMany({
             include: {
@@ -255,7 +261,7 @@ transactionRoutes.get("/transactions/expense/categories", async (req, res) => {
 });
 
 // Get all expense transactions for specified category
-transactionRoutes.get("/transactions/expense/category/:id", async (req, res) => {
+transactionRoutes.get("/transactions/expense/category/:id", async (req: express.Request, res: express.Response) => {
     try {
         const { expenseCategoryId } = req.params.id;
     
@@ -274,7 +280,7 @@ transactionRoutes.get("/transactions/expense/category/:id", async (req, res) => 
 });
 
 // Create expense transaction
-transactionRoutes.post("/expense/create", async (req, res) => {
+transactionRoutes.post("/expense/create", async (req: express.Request, res: express.Response) => {
     try {
         const { date, counterparty, amount, expenseCategoryId } = req.body;
         const newTransaction = await prisma.expenseTransaction.create({
@@ -301,7 +307,7 @@ transactionRoutes.post("/expense/create", async (req, res) => {
 });
 
 // Update expense transaction
-transactionRoutes.put("/expense/update/:id", async (req, res) => {
+transactionRoutes.put("/expense/update/:id", async (req: express.Request, res: express.Response) => {
     try {
         const transactionId = req.params.id;
         const { date, counterparty, amount, expenseCategoryId } = req.body;
@@ -330,7 +336,7 @@ transactionRoutes.put("/expense/update/:id", async (req, res) => {
 });
 
 // Delete expense transaction
-transactionRoutes.delete("/expense/delete/:id", async (req, res) => {
+transactionRoutes.delete("/expense/delete/:id", async (req: express.Request, res: express.Response) => {
     try {
         const transactionId = req.params.id;
         const deletedTransaction = await prisma.expenseTransaction.delete({

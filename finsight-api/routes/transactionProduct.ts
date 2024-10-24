@@ -1,7 +1,7 @@
+// @ts-ignore
 import { Router, Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-import prisma from '../prisma/prisma';
-import { authenticateUser } from '../middleware/userAuth';
+import prisma from '../prisma/prisma.js';
+import { authenticateUser } from '../middleware/userAuth.js';
 
 const transactionProductRoutes = Router();
 transactionProductRoutes.use(authenticateUser);

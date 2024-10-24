@@ -1,7 +1,10 @@
+// @ts-ignore
 import bcrypt from "bcrypt";
+// @ts-ignore
 import express from "express";
+// @ts-ignore
 import jwt from "jsonwebtoken";
-import prisma from "../prisma/prisma";
+import prisma from "../prisma/prisma.js";
 
 const loginRoutes = express.Router();
 
@@ -9,7 +12,7 @@ async function validatePassword(inputPassword: string, password: string) {
     return await bcrypt.compare(inputPassword, password);
 }
 
-loginRoutes.post("/", async (req, res) => {
+loginRoutes.post("/", async (req: express.Request, res: express.Response) => {
     const { email, password } = req.body;
     try {
         const user = await prisma.user.findFirst({

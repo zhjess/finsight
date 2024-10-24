@@ -2,7 +2,7 @@
 // @ts-ignore
 import express from "express";
 import prisma from "../prisma/prisma.js";
-import { authenticateUser } from "../middleware/userAuth";
+import { authenticateUser } from "../middleware/userAuth.js";
 
 const kpiRoutes = express.Router();
 kpiRoutes.use(authenticateUser);
