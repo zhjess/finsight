@@ -49,7 +49,7 @@ export const api = createApi({
                 url: "/product/create",
                 method: "POST",
                 body: product
-            })
+            }) 
         }),
         updateProduct: builder.mutation<UpdateProductResponse, { id: string; product: UpdateProductRequest }>({
             query: ({ id, product }) => ({

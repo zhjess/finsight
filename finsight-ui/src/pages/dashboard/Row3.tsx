@@ -59,7 +59,7 @@ const Row3: React.FC<Row2Props> = ({ kpiYear }) => {
     const productColumns = [
         { field: "description", headerName: "Name", flex: 0.5 },
         { field: "id", headerName: "Product ID", flex: 1 },
-        { field: "totalRevenue", headerName: "Total revenue", flex: 0.5, valueFormatter: (value: number) => `$${(value / 100).toFixed(2)}` }
+        { field: "totalRevenue", headerName: "Total revenue", flex: 0.5, valueFormatter: (value: number) => `$${(value / 100).toLocaleString(undefined, {minimumFractionDigits: 2})}` }
     ];
 
     const transactionColumns = [
@@ -73,7 +73,7 @@ const Row3: React.FC<Row2Props> = ({ kpiYear }) => {
             },
          },
         { field: "id", headerName: "Transaction ID", flex: 1 },
-        { field: "transactionTotal", headerName: "Total", flex: 0.5, valueFormatter: (value: number) => `$${(value / 100).toFixed(2)}`}
+        { field: "transactionTotal", headerName: "Total", flex: 0.5, valueFormatter: (value: number) => `$${(value / 100).toLocaleString(undefined, {minimumFractionDigits: 2})}`}
     ];
 
     const progressBarWidth = () => {
