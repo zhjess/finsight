@@ -3,7 +3,7 @@ import DashBox from "@/components/DashBox";
 import DashBoxHeader from "@/components/DashBoxHeader";
 import FlexBetween from "@/components/FlexBetween";
 import { useCreateRevenueTransactionMutation, useDeleteRevenueTransactionMutation, useGetProductsQuery, useGetRevenueTransactionsQuery, useUpdateRevenueTransactionMutation } from "@/state/api";
-import { Box, Button, FormControl, FormLabel, IconButton, InputLabel, MenuItem, Select, TextField, Typography, useTheme } from "@mui/material";
+import { Box, Button, FormControl, FormLabel, IconButton, InputLabel, MenuItem, Select, TextField, Typography, useTheme, FormHelperText } from "@mui/material";
 import { DataGrid, GridCellParams } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import CustomModal from "@/components/CustomModal";
@@ -30,20 +30,20 @@ const RevenueTransactions = () => {
     const [modalType, setModalType] = useState<"add" | "edit" | null>(null);
     const [selectedTransactionId, setSelectedTransactionId] = useState<string | null>(null);
     const [formData, setFormData] = useState<FormData>({
-        date: { day: new Date().getDate(), month: new Date().getMonth() + 1, year: new Date().getFullYear() }, // today's date
+        date: { day: new Date().getDate(), month: new Date().getMonth() + 1, year: new Date().getFullYear() },
         customer: "",
-        transactionProducts: [] as FormTransactionProduct[]
+        transactionProducts: [{ productId: "", quantity: 0 }]
     });
-    const [errors, setErrors] = useState({ customer: "", transactionProducts: "" });
+    const [errors, setErrors] = useState({ customer: "", transactionProducts: [] as string[] });
 
-    const { data: transactionData, refetch } = useGetRevenueTransactionsQuery({ page: currentPage, limit: limit});
-    const { data: productData } = useGetProductsQuery({ page: 1, limit: 50 }); // to adj as needed
+    const { data: transactionData, refetch } = useGetRevenueTransactionsQuery({ page: currentPage, limit: limit });
+    const { data: productData } = useGetProductsQuery({ page: 1, limit: 50 });
     const [createTransaction] = useCreateRevenueTransactionMutation();
     const [updateTransaction] = useUpdateRevenueTransactionMutation();
     const [deleteTransaction] = useDeleteRevenueTransactionMutation();
 
     React.useEffect(() => {
-        refetch(); // refetch when currentPage changes
+        refetch();
     }, [currentPage, refetch]);
 
     const handleNextPage = () => {
@@ -72,7 +72,7 @@ const RevenueTransactions = () => {
             customer: "", 
             transactionProducts: [{ productId: "", quantity: 0 }] 
         });
-        setErrors({ customer: "", transactionProducts: "" });
+        setErrors({ customer: "", transactionProducts: [] });
     };
 
     const handleModalOpen = (type: "add" | "edit", transactionId?: string) => {
@@ -106,16 +106,12 @@ const RevenueTransactions = () => {
         const updatedProducts = [...formData.transactionProducts];
 
         if (name === "quantity") {
-            updatedProducts[index] = { ...updatedProducts[index], [name as string]: value ? Number(value) : "" };
+            updatedProducts[index] = { ...updatedProducts[index], [name as string]: value ? Number(value) : 0 };
         } else {
             updatedProducts[index] = { ...updatedProducts[index], [name as string]: value };
         }
 
-        setFormData((prev) => {
-            const newFormData = { ...prev, transactionProducts: updatedProducts };
-            console.log("Updated formData:", newFormData);
-            return newFormData;
-        });
+        setFormData((prev) => ({ ...prev, transactionProducts: updatedProducts }));
     };
 
     const handleAddTransactionProduct = () => {
@@ -123,24 +119,25 @@ const RevenueTransactions = () => {
             ...prev,
             transactionProducts: [...prev.transactionProducts, { productId: "", quantity: 0 }],
         }));
+        setErrors((prev) => ({ ...prev, transactionProducts: [...prev.transactionProducts.map(() => "")] }));
     };
 
     const validateForm = () => {
-        const newErrors = { customer: "", transactionProducts: "" };
+        const newErrors: { customer: string; transactionProducts: string[] } = {
+            customer: "",
+            transactionProducts: Array(formData.transactionProducts.length).fill(""),
+        };
+    
         if (!formData.customer) newErrors.customer = "Customer name is required";
-
-        const productErrors = formData.transactionProducts.map((product) => {
+    
+        formData.transactionProducts.forEach((product, index) => {
             if (!product.productId || product.quantity <= 0) {
-                return "Product name is required and quantity must be greater than 0";
+                newErrors.transactionProducts[index] = "Product name is required and quantity must be greater than 0";
+            } else {
+                newErrors.transactionProducts[index] = "";
             }
-            return "";
         });
-
-        const hasProductErrors = productErrors.some((error) => error !== "");
-        if (hasProductErrors) {
-            newErrors.transactionProducts = "Product name is required and quantity must be greater than 0";
-        }
-
+    
         setErrors(newErrors);
         return Object.values(newErrors).every((error) => error === "");
     };
@@ -149,13 +146,13 @@ const RevenueTransactions = () => {
         if (!validateForm()) return;
 
         try {
-            const date = new Date(formData.date.year, formData.date.month - 1, formData.date.day); // convert d/m/y  selections to date object
+            const date = new Date(formData.date.year, formData.date.month - 1, formData.date.day);
 
             if (modalType === "add") {
                 const transactionData = {
-                        customer: formData.customer,
-                        transactionProducts: formData.transactionProducts,
-                        date: date.toISOString(),
+                    customer: formData.customer,
+                    transactionProducts: formData.transactionProducts,
+                    date: date.toISOString(),
                 };
                 await createTransaction(transactionData);
             } else if (modalType === "edit" && selectedTransactionId) {
@@ -164,8 +161,7 @@ const RevenueTransactions = () => {
                     transactionProducts: formData.transactionProducts,
                     date: date.toISOString(),
                 };
-                console.log("updated transaction data", updatedTransactionData);
-                await updateTransaction({ id: selectedTransactionId, transaction: updatedTransactionData});
+                await updateTransaction({ id: selectedTransactionId, transaction: updatedTransactionData });
             }
             await refetch();
             handleModalClose();
@@ -219,14 +215,13 @@ const RevenueTransactions = () => {
     ];
 
     const renderModalContent = () => {
-        // dropdown menu options
         const days = Array.from({ length: 31 }, (_, i) => i + 1);
         const months = Array.from({ length: 12 }, (_, i) => i + 1);
-        const years = Array.from({ length: 11 }, (_, i) => new Date().getFullYear() - i); // last 10 years
+        const years = Array.from({ length: 11 }, (_, i) => new Date().getFullYear() - i);
     
         const transactionTotal = formData.transactionProducts.reduce((accumulator, currentValue) => {
             const product = products.find(p => p.id === currentValue.productId);
-            const price = product ? parseFloat(product.price) : 0; // ensure price is a number
+            const price = product ? parseFloat(product.price) : 0; 
             return accumulator + (price * currentValue.quantity);
         }, 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     
@@ -295,47 +290,49 @@ const RevenueTransactions = () => {
                     />
                     <FormLabel sx={{ fontSize: "small", marginBottom: "1rem"}}>Transaction items:</FormLabel>
                     {formData.transactionProducts.map((transactionProduct, index) => (
-                        <Box display="flex" key={index} gap="1rem">
-                            <Box flex="3">
-                                <FormControl fullWidth sx={{ marginBottom: "1rem"}}>
-                                    <InputLabel size="small">Product</InputLabel>
-                                    <Select
-                                        label="Product"
-                                        name="productId"
-                                        size="small"
-                                        value={transactionProduct.productId}
-                                        onChange={(e) => handleTransactionProductsChange(e as React.ChangeEvent<{ name?: string; value: unknown }>, index)}
-                                        MenuProps={{
-                                            PaperProps: {
-                                                style: {
-                                                    maxHeight: 300,
-                                                    width: 400,
-                                                }
-                                            }
-                                        }}
-                                    >   
-                                        {products.map((product) => (
-                                            <MenuItem key={product.id} value={product.id}>
-                                                {`${product.description} | $${product.price} | ${product.id}`}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </Box>
-                            <Box flex="1">
-                                <TextField
-                                    label="Quantity"
-                                    name="quantity"
-                                    type="number"
-                                    size="small"
-                                    value={transactionProduct.quantity !== 0 ? transactionProduct.quantity : ""} // prevent from displaying 0
-                                    onChange={(e) => handleTransactionProductsChange(e, index)}
-                                    fullWidth
-                                    margin="none"
-                                />
-                            </Box>
-                        </Box>
+    <Box display="flex" key={index} gap="1rem">
+        <Box flex="3">
+            <FormControl fullWidth sx={{ marginBottom: "1rem" }} error={!!errors.transactionProducts[index]}>
+                <InputLabel size="small">Product</InputLabel>
+                <Select
+                    label="Product"
+                    name="productId"
+                    size="small"
+                    value={transactionProduct.productId}
+                    onChange={(e) => handleTransactionProductsChange(e as React.ChangeEvent<{ name?: string; value: unknown }>, index)}
+                    MenuProps={{
+                        PaperProps: {
+                            style: {
+                                maxHeight: 300,
+                                width: 400,
+                            },
+                        },
+                    }}
+                >
+                    {products.map((product) => (
+                        <MenuItem key={product.id} value={product.id}>
+                            {`${product.description} | $${product.price} | ${product.id}`}
+                        </MenuItem>
                     ))}
+                </Select>
+                <FormHelperText>{errors.transactionProducts[index]}</FormHelperText>
+            </FormControl>
+        </Box>
+        <Box flex="1">
+            <TextField
+                label="Quantity"
+                name="quantity"
+                type="number"
+                size="small"
+                value={transactionProduct.quantity !== 0 ? transactionProduct.quantity : ""}
+                onChange={(e) => handleTransactionProductsChange(e, index)}
+                fullWidth
+                margin="none"
+                error={!!errors.transactionProducts[index]}
+            />
+        </Box>
+    </Box>
+))}
                 </FormControl>
                 <Box marginTop="0.5rem">
                     <Button
@@ -352,13 +349,11 @@ const RevenueTransactions = () => {
                 </Box>
                 <Box display="flex" justifyContent="flex-end" mt="1.5rem">
                     <Typography variant="h4" fontWeight="bold" color={palette.grey[700]}>Transaction total:</Typography>
-                    <Typography variant="h4" fontWeight="bold" color={palette.grey[700]}ml="1.5rem">${transactionTotal}</Typography>
+                    <Typography variant="h4" fontWeight="bold" color={palette.grey[700]} ml="1.5rem">${transactionTotal}</Typography>
                 </Box>
-
             </Box>
         );
     };
-    
 
     return (
         <DashBox height="90vh">

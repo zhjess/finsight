@@ -3,18 +3,13 @@ import DashBox from "@/components/DashBox";
 import DashBoxHeader from "@/components/DashBoxHeader";
 import FlexBetween from "@/components/FlexBetween";
 import { useCreateExpenseTransactionMutation, useDeleteExpenseTransactionMutation, useGetExpenseCategoriesQuery, useGetExpenseTransactionsQuery, useUpdateExpenseTransactionMutation } from "@/state/api";
-import { Box, FormControl, FormLabel, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField, useTheme } from "@mui/material";
+import { Box, FormControl, FormHelperText, FormLabel, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField, useTheme } from "@mui/material";
 import { DataGrid, GridCellParams } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import CustomModal from "@/components/CustomModal";
 import AddButton from "@/components/AddButton";
 import { formatDate } from "@/utils/dateUtils";
 import PageNumberNav from "@/components/PageNumberNav";
-
-// interface FormTransactionProduct {
-//     productId: string;
-//     quantity: number;
-// }
 
 interface FormData {
     date: { day: number; month: number; year: number }; 
@@ -36,9 +31,9 @@ const ExpenseTransactions = () => {
         amount: "",
         expenseCategoryId: ""
     });
-    const [errors, setErrors] = useState({ counterparty: "", amount: "" });
+    const [errors, setErrors] = useState({ counterparty: "", amount: "", expenseCategory: "" });
 
-    const { data: transactionData, refetch } = useGetExpenseTransactionsQuery({ page: currentPage, limit: limit});
+    const { data: transactionData, refetch } = useGetExpenseTransactionsQuery({ page: currentPage, limit: limit });
     const { data: expenseCategoryData } = useGetExpenseCategoriesQuery();
     const [createTransaction] = useCreateExpenseTransactionMutation();
     const [updateTransaction] = useUpdateExpenseTransactionMutation();
@@ -64,7 +59,7 @@ const ExpenseTransactions = () => {
             amount: "",
             expenseCategoryId: ""
         });
-        setErrors({ counterparty: "", amount: "" });
+        setErrors({ counterparty: "", amount: "", expenseCategory: "" });
     };
 
     const handleModalOpen = (type: "add" | "edit", transactionId?: string) => {
@@ -95,22 +90,17 @@ const ExpenseTransactions = () => {
     };
 
     const handleExpenseCategoryChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-        // const { name, value } = event.target;
-        // const updatedProducts = [...formData.transactionProducts];
         const value = event.target.value as string;
 
-        setFormData((prev) => {
-            const newFormData: FormData = {...prev, expenseCategoryId: value};
-            // const newFormData = { ...prev, transactionProducts: updatedProducts };
-            console.log("Updated formData:", newFormData);
-            return newFormData;
-        });
+        setFormData((prev) => ({ ...prev, expenseCategoryId: value }));
+        setErrors((prev) => ({ ...prev, expenseCategory: "" })); // Clear error when category is selected
     };
 
     const validateForm = () => {
-        const newErrors = { counterparty: "", amount: "" };
+        const newErrors = { counterparty: "", amount: "", expenseCategory: "" };
         if (!formData.counterparty) newErrors.counterparty = "Counterparty name is required";
         if (!formData.amount) newErrors.amount = "Expense amount is required";
+        if (!formData.expenseCategoryId) newErrors.expenseCategory = "Expense category is required";
 
         setErrors(newErrors);
         return Object.values(newErrors).every((error) => error === "");
@@ -120,14 +110,14 @@ const ExpenseTransactions = () => {
         if (!validateForm()) return;
 
         try {
-            const date = new Date(formData.date.year, formData.date.month - 1, formData.date.day); // convert d/m/y  selections to date object
+            const date = new Date(formData.date.year, formData.date.month - 1, formData.date.day); // convert d/m/y selections to date object
 
             if (modalType === "add") {
                 const transactionData = {
-                        date: date.toISOString(),
-                        counterparty: formData.counterparty,
-                        amount: Math.round(parseFloat(formData.amount) * 100),
-                        expenseCategoryId: formData.expenseCategoryId
+                    date: date.toISOString(),
+                    counterparty: formData.counterparty,
+                    amount: Math.round(parseFloat(formData.amount) * 100),
+                    expenseCategoryId: formData.expenseCategoryId
                 };
                 await createTransaction(transactionData);
             } else if (modalType === "edit" && selectedTransactionId) {
@@ -138,7 +128,7 @@ const ExpenseTransactions = () => {
                     date: date.toISOString(),
                 };
                 console.log("updated transaction data", updatedTransactionData);
-                await updateTransaction({ id: selectedTransactionId, transaction: updatedTransactionData});
+                await updateTransaction({ id: selectedTransactionId, transaction: updatedTransactionData });
             }
             await refetch();
             handleModalClose();
@@ -224,10 +214,10 @@ const ExpenseTransactions = () => {
         return (
             <Box margin="2rem 1rem">
                 <FormControl fullWidth sx={{ marginBottom: "1.5rem" }}>
-                <FormLabel sx={{ fontSize: "medium", marginBottom: "1.5rem" }}>
-                    <b>{modalType === "add" ? "Enter new transaction details:" : "Update existing transaction details:"}</b>
-                </FormLabel>
-                <FormLabel sx={{ fontSize: "small", marginBottom: "1rem"}}>Transaction details:</FormLabel>
+                    <FormLabel sx={{ fontSize: "medium", marginBottom: "1.5rem" }}>
+                        <b>{modalType === "add" ? "Enter new transaction details:" : "Update existing transaction details:"}</b>
+                    </FormLabel>
+                    <FormLabel sx={{ fontSize: "small", marginBottom: "1rem"}}>Transaction details:</FormLabel>
                     <Box display="flex" justifyContent="space-between">
                         <FormControl sx={{ flex: 1, marginRight: "1rem" }}>
                             <InputLabel size="small">Day</InputLabel>
@@ -291,6 +281,7 @@ const ExpenseTransactions = () => {
                                 name="expenseCategory"
                                 value={formData.expenseCategoryId}
                                 onChange={(e) => handleExpenseCategoryChange(e as React.ChangeEvent<{ name?: string; value: unknown }>)}
+                                error={!!errors.expenseCategory}
                                 MenuProps={{
                                     PaperProps: {
                                         style: {
@@ -306,6 +297,7 @@ const ExpenseTransactions = () => {
                                     </MenuItem>
                                 ))}
                             </Select>
+                            {errors.expenseCategory && <FormHelperText error>{errors.expenseCategory}</FormHelperText>}
                     </FormControl>
                     <TextField
                         label="Expense"
