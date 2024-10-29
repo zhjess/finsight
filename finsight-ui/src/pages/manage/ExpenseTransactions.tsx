@@ -11,12 +11,12 @@ import AddButton from "@/components/AddButton";
 import { formatDate } from "@/utils/dateUtils";
 import PageNumberNav from "@/components/PageNumberNav";
 
-interface FormData {
-    date: { day: number; month: number; year: number }; 
-    counterparty: string;
-    amount: string;
-    expenseCategoryId: string;
-}
+// interface FormData {
+//     date: { day: number; month: number; year: number }; 
+//     counterparty: string;
+//     amount: string;
+//     expenseCategoryId: string;
+// }
 
 const ExpenseTransactions = () => {
     const { palette } = useTheme();
