@@ -3,9 +3,13 @@
 ## Tech stack
 
 Language: TypeScript
+
 Front End: React, Vite, Redux, Material UI, Recharts, Regression
+
 Back End: ExpressJS, NodeJS, Prisma
+
 Database: PostegreSQL
+
 Hosting: Vercel 
 
 ## Key features
