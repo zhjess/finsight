@@ -1,24 +1,24 @@
 # Finsight
 
-Key features:
+## Key features
 
-## User login
+### User login
 
 ![LoginPage](./docs/Screenshot-LoginPage.png)
 
-## Dashboard page
+### Dashboard page
 
 ![DashboardPage](/docs/Screenshot-DashboardPage.png)
 
-## Predictions page
+### Predictions page
 
 ![PredictionsPage](/docs/Screenshot-PredictionsPage.png)
 
-## Manage Data page
+### Manage Data page
 
 ![ManageDataPage](/docs/Screenshot-ManageDataPage.png)
 
-### Revenue transactions
+#### Revenue transactions
 
 - Add new revenue transaction
 
@@ -30,7 +30,7 @@ Key features:
 
 ![UpdateRevenueTransaction](/docs/Screenshot-UpdateRevenueTransaction.png)
 
-### Expense transactions
+#### Expense transactions
 
 - Add new expense transaction
 
@@ -42,7 +42,7 @@ Key features:
 
 ![UpdateExpenseTransaction](/docs/Screenshot-UpdateExpenseTransaction.png)
 
-### Product list
+#### Product list
 
 - Add new product
 
