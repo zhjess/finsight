@@ -1,5 +1,7 @@
 # Finsight
 
+![Finsight](./docs/Cover-Finsight.png)
+
 Key features:
 
 ## User login
