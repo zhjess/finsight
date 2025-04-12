@@ -42,16 +42,17 @@ const Row2: React.FC<Row2Props> = ({ kpiYear }) => {
 
     const productPricesExpenses = useMemo(() => {
         return (
-            productData &&
-            productData.products.map(({ id, price, expense }) => {
-                return {
-                    id: id,
-                    price: (price / 100).toFixed(2), // Denomination: $
-                    expense: (expense / 100).toFixed(2) // Denomination: $
-                };
-            })
+          productData &&
+          productData.products.map(({ id, description, price, expense }) => {
+            return {
+              id,
+              description,
+              price: Number((price / 100).toFixed(2)),  // Denomination: $
+              expense: Number((expense / 100).toFixed(2))  // Denomination: $
+            };
+          })
         );
-    }, [productData]);
+      }, [productData]);
 
     return (
         <>
@@ -172,6 +173,7 @@ const Row2: React.FC<Row2Props> = ({ kpiYear }) => {
                             type="number"
                             dataKey="price"
                             name="price"
+                            domain={['auto', 'auto']}
                             axisLine={false}
                             tickLine={false}
                             style={{ fontSize: "9px" }}
@@ -181,13 +183,17 @@ const Row2: React.FC<Row2Props> = ({ kpiYear }) => {
                             type="number"
                             dataKey="expense"
                             name="expense"
+                            domain={['auto', 'auto']}
                             axisLine={false}
                             tickLine={false}
                             style={{ fontSize: "9px" }}
                             tickFormatter={(v) => `$${v}`}
                         />
-                        <ZAxis type="number" range={[20]} />
-                        <Tooltip cursor={{ strokeDasharray: "3 3" }} formatter={(v) => `${v}`} />
+                        <ZAxis type="number" range={[17]} />
+                        <Tooltip
+                            cursor={{ strokeDasharray: "3 3" }}
+                            formatter={(value, name) => [`$${value}`, name]}
+                        />
                         <Scatter name="Product Expense Ratio" data={productPricesExpenses} fill={palette.tertiary[500]} />
                     </ScatterChart>
                 </ResponsiveContainer>
