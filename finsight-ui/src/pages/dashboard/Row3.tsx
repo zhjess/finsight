@@ -169,12 +169,12 @@ const Row3: React.FC<Row2Props> = ({ kpiYear }) => {
                         const isInterestExpense = data[0].name === "Interest expense";
                         return (
                             <Box key={`${data[0].name}-${i}`} mt="0.5rem" display="flex" flexDirection="column" alignItems="center">
-                                <PieChart width={90} height={60}>
+                                <PieChart width={90} height={40}>
                                     <Pie
                                         stroke="none"
                                         data={data}
-                                        innerRadius={10}
-                                        outerRadius={25}
+                                        innerRadius={7}
+                                        outerRadius={15}
                                         dataKey="value"
                                     > 
                                         {/* 
